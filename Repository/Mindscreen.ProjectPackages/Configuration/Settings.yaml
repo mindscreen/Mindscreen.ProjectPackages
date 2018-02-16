@@ -1,0 +1,15 @@
+Neos:
+  Flow:
+    mvc:
+      routes:
+        'Mindscreen.ProjectPackages': true
+
+#Mindscreen:
+#  ProjectPackages:
+#    allowCrossOriginRequests: false
+#    clients:
+#      myGitlab:
+#        type: Mindscreen\ProjectPackages\Strategy\RepositorySource\Gitlab
+#        options:
+#          url: ''
+#          token: ''

@@ -1,0 +1,58 @@
+@import 'settings';
+
+.v-select {
+    font-size: 0.8em;
+    padding: 9px 2px;
+    background-color: $colorBgLight;
+    border: none;
+    outline: 2px solid $colorBgBlack;
+    outline-offset: -2px;
+    color: $colorFont;
+    &.open {
+        outline-color: $colorFontLink;
+    }
+    .dropdown-toggle {
+        border: none;
+        border-radius: 0;
+        .clear {
+            color: $colorFontInactive;
+            bottom: 16px;
+            &:active, &:focus {
+                color: $colorFont;
+            }
+        }
+    }
+    .selected-tag {
+        color: $colorFont;
+    }
+    input[type=search] {
+        color: $colorFont;
+    }
+    .open-indicator {
+        bottom: 12px;
+        &::before {
+            border-color: $colorFontInactive;
+        }
+        &:active, &:focus {
+            &::before {
+                border-color: $colorFont;
+            }
+        }
+    }
+    .dropdown-menu {
+        background-color: $colorBgLight;
+            li {
+                > a {
+                    color: $colorFontInactive;
+                }
+            }
+        .active > a {
+            background-color: $colorBgSelected;
+            color: $colorFont;
+        }
+        .highlight > a {
+            background-color: $colorBgHover;
+            color: $colorFont;
+        }
+    }
+}

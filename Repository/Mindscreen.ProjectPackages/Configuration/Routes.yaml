@@ -1,0 +1,32 @@
+-
+    name: 'Mindscreen.ProjectPackages :: Home'
+    uriPattern: ''
+    defaults:
+        '@package': Mindscreen.ProjectPackages
+        '@controller': Standard
+        '@action': index
+        '@format': html
+-
+    name: 'Mindscreen.ProjectPackages :: Projects'
+    uriPattern: 'projects/{@action}'
+    defaults:
+        '@package': Mindscreen.ProjectPackages
+        '@controller': Project
+        '@action': list
+        '@format': json
+-
+    name: 'Mindscreen.ProjectPackages :: Project'
+    uriPattern: 'projects/{@action}/{projectKey}'
+    defaults:
+        '@package': Mindscreen.ProjectPackages
+        '@controller': Project
+        '@action': list
+        '@format': json
+-
+    name: 'Mindscreen.ProjectPackages :: Packages'
+    uriPattern: 'packages/{@action}'
+    defaults:
+        '@package': Mindscreen.ProjectPackages
+        '@controller': Package
+        '@action': list
+        '@format': json

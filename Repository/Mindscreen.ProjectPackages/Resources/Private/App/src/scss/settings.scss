@@ -1,0 +1,37 @@
+$colorBgBlack: #1e1e1e;
+$colorBgDark: #252526;
+$colorBgLight: #333333;
+$colorBgSelected: #135079;
+$colorBgHover: #3f3f46;
+
+$colorFont: #ffffff;
+$colorFontInactive: #adadad;
+$colorFontLink: #4080d0;
+
+.text-highlight {
+    color: $colorFontLink;
+}
+
+.text-secondary {
+    color: $colorFontInactive;
+}
+
+.visuallyhidden { 
+    position: absolute; 
+    overflow: hidden; 
+    clip: rect(0 0 0 0); 
+    height: 1px; width: 1px; 
+    margin: -1px; padding: 0; border: 0; 
+}
+
+@mixin input {
+    padding: 18px 8px;
+    background-color: $colorBgLight;
+    border: none;
+    outline: 2px solid $colorBgBlack;
+    outline-offset: -2px;
+    color: $colorFont;
+    &:focus, &:active {
+        outline-color: $colorFontLink;
+    }
+}

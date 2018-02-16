@@ -1,0 +1,27 @@
+/.idea/
+/.vscode/
+/Build/
+/Configuration/*
+!/Configuration/Routes.yaml
+/Data/
+/Packages/
+/Web/.htaccess
+/Web/index.php
+/Web/robots.txt
+/Web/_Resources/
+/bin/
+/Readme.txt
+/Upgrading.txt
+/Readme.rst
+/Upgrading.rst
+/flow
+/flow.bat
+/node_modules/
+
+# ignore the downloaded selenium server, config and the selenium
+# temporary directory (which starts with a quote, do not ask why...)
+/Tests/Selenium/settings.xml
+Build/Resources/Java/selenium-server-standalone*
+/"
+
+Thumbs.db
