@@ -1,9 +1,11 @@
 <?php
+
 namespace Mindscreen\ProjectPackages\Service;
 
 use Mindscreen\ProjectPackages\Domain\Model\Repository;
 use Mindscreen\ProjectPackages\Domain\Repository\RepositoryRepository;
 use Mindscreen\ProjectPackages\Exception\MissingConfigurationException;
+use Mindscreen\ProjectPackages\Factory\RepositorySourceFactory;
 use Mindscreen\ProjectPackages\Strategy\Project\ProjectStrategyInterface;
 use Mindscreen\ProjectPackages\Strategy\RepositorySource\RepositorySourceInterface;
 use Neos\Flow\Annotations as Flow;
@@ -32,6 +34,12 @@ class RepositoryEvaluationService
     protected $repositoryRepository;
 
     /**
+     * @Flow\Inject
+     * @var RepositorySourceFactory
+     */
+    protected $repositorySourceFactory;
+
+    /**
      * @throws MissingConfigurationException
      * @throws \Neos\Flow\Configuration\Exception\InvalidConfigurationTypeException
      */
@@ -52,54 +60,25 @@ class RepositoryEvaluationService
      * @param $identifier
      * @param array|null $configuration
      * @throws MissingConfigurationException
-     * @throws \Neos\Flow\Configuration\Exception\InvalidConfigurationTypeException
      */
     public function evaluateRepositorySource($identifier, array $configuration = null)
     {
-        if ($configuration === null) {
-            $configuration = $this->configurationManager->getConfiguration(
-                ConfigurationManager::CONFIGURATION_TYPE_SETTINGS,
-                'Mindscreen.ProjectPackages.clients.' . $identifier);
-        }
-        if ($configuration === null || !isset($configuration['type'])) {
-            throw new MissingConfigurationException(
-                sprintf('No repository-source strategy defined with identifier `%s`.', $identifier), 1518509852);
-        }
-        if (!isset($configuration['options']) || !is_array($configuration['options'])) {
-            $options = [];
-        } else {
-            $options = $configuration['options'];
-        }
-        $repositorySourceClassName = $configuration['type'];
-        if (!$this->reflectionService->isClassImplementationOf($repositorySourceClassName, RepositorySourceInterface::class)) {
-            throw new \InvalidArgumentException(
-                sprintf('The repository-source `%s` configures `%s` as strategy which does not implement the interface `%s`',
-                    $identifier, $repositorySourceClassName, RepositorySourceInterface::class), 1518510283);
-        }
-        /** @var RepositorySourceInterface $repositorySource */
-        $repositorySource = new $repositorySourceClassName($identifier, $options);
+        $repositorySource = $this->repositorySourceFactory->create($identifier, $configuration);
         foreach ($repositorySource->getAllRepositories() as $repositoryId) {
             $this->evaluateRepository($repositorySource, $repositoryId);
         }
-    }
-
-    /**
-     * Evaluate strategies for a single repository of a given repository source
-     * @param RepositorySourceInterface $repositorySource
-     * @param string $repositoryId
-     */
-    public function evaluateRepositoryById(RepositorySourceInterface $repositorySource, $repositoryId) {
-        $this->repositoryRepository->removeBySourceAndId($repositorySource->getIdentifier(), $repositoryId);
-        $repository = $repositorySource->getRepository($repositoryId);
-        $this->evaluateRepository($repositorySource, $repository);
     }
 
     protected function evaluateRepository(RepositorySourceInterface $repositorySource, Repository $repository)
     {
         $this->repositoryRepository->removeBySourceAndId($repositorySource->getIdentifier(), $repository->getId());
         $strategyClassNames = $this->reflectionService->getAllImplementationClassNamesForInterface(ProjectStrategyInterface::class);
-        $strategyClassNames = array_filter($strategyClassNames, function($strategy) { return $strategy::getPriority() >= 0; });
-        usort($strategyClassNames, function($a, $b) { return $a::getPriority() < $b::getPriority();});
+        $strategyClassNames = array_filter($strategyClassNames, function ($strategy) {
+            return $strategy::getPriority() >= 0;
+        });
+        usort($strategyClassNames, function ($a, $b) {
+            return $a::getPriority() < $b::getPriority();
+        });
         $evaluatedStrategies = [];
         foreach ($strategyClassNames as $strategyClassName) {
             $strategySubClasses = $this->reflectionService->getAllSubClassNamesForClass($strategyClassName);
@@ -114,5 +93,17 @@ class RepositoryEvaluationService
                 $evaluatedStrategies[] = $strategyClassName;
             }
         }
+    }
+
+    /**
+     * Evaluate strategies for a single repository of a given repository source
+     * @param RepositorySourceInterface $repositorySource
+     * @param string $repositoryId
+     */
+    public function evaluateRepositoryById(RepositorySourceInterface $repositorySource, $repositoryId)
+    {
+        $this->repositoryRepository->removeBySourceAndId($repositorySource->getIdentifier(), $repositoryId);
+        $repository = $repositorySource->getRepository($repositoryId);
+        $this->evaluateRepository($repositorySource, $repository);
     }
 }
