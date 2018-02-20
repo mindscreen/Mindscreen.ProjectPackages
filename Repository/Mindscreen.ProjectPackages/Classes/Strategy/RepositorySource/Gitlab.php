@@ -58,14 +58,13 @@ class Gitlab extends AbstractRepositorySource
      * @param string $fileName
      * @param null $revision
      * @return bool
-     * @throws FileNotFoundException
      */
     public function fileExists($repositoryId, $fileName, $revision = null)
     {
         try {
             $this->getFileContents($repositoryId, $fileName, $revision);
             return true;
-        } catch (RuntimeException $e) {
+        } catch (FileNotFoundException $e) {
             return false;
         }
     }
