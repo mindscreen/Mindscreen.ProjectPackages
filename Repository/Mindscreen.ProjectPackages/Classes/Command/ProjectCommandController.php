@@ -4,7 +4,6 @@ namespace Mindscreen\ProjectPackages\Command;
 
 
 use Mindscreen\ProjectPackages\Domain\Repository\RepositoryRepository;
-use Mindscreen\ProjectPackages\Service\ProjectService;
 use Mindscreen\ProjectPackages\Service\RepositoryEvaluationService;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Cli\CommandController;
@@ -23,6 +22,12 @@ class ProjectCommandController extends CommandController
      * @var RepositoryRepository
      */
     protected $repositoryRepository;
+
+    /**
+     * @Flow\InjectConfiguration("clients")
+     * @var array
+     */
+    protected $repositorySourceConfigurations;
 
     /**
      * Update all projects from all VCS sources
@@ -47,5 +52,15 @@ class ProjectCommandController extends CommandController
     public function updateFromSourceCommand($sourceIdentifier)
     {
         $this->repositoryEvaluationService->evaluateRepositorySource($sourceIdentifier);
+    }
+
+    /**
+     * List all configured repository sources
+     */
+    public function listSourcesCommand()
+    {
+        foreach ($this->repositorySourceConfigurations as $client => $configuration) {
+            $this->outputLine($client);
+        }
     }
 }

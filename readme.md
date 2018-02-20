@@ -54,6 +54,7 @@ Keep in mind that some repository-source methods might take a long time: e.g. se
 * `project:updateall` Update all repositories from all sources
 * `project:updatefromsource --source-identifier` Update all repositories from the specified source
 * `project:deletebysource --source-identifier` Delete all repositories (and associated information) originating the specified source (e.g. after renaming a source)
+* `project:listsources` List all configured repository-sources
 
 ## UI
 The application serves a single vue app and several json [endpoints](#endpoints).
