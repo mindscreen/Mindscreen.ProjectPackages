@@ -40,7 +40,20 @@ A repository source can be anything that provides repositories where you host yo
 Load repositories from a GitLab instance.  
 **Options:**
 * url: the gitlab url
-* token: a valid api token for that github
+* token: a valid api token for that gitlab
+
+### Mindscreen\ProjectPackages\Strategy\RepositorySource\Github
+Load repositories from [GitHub.com](https://github.com).  
+**Options:**  
+* user: a github user to load repositories from
+* org: a github organisation to load repositories from (Note that only one of these will be used by a source.)
+* authorization: optional, but will drastically increase your rate-limit. See *Authorization* below.
+
+**Authorization:**  
+An array that at least requires the setting `type` with the following possible values and additional fields:
+* `value`: The value in `header` will be set as `Authorization` header
+* `basic`: Requires either a [personal access token](https://github.com/blog/1509-personal-api-tokens) as `token` or a combination of `user` and `password`.
+* `token`: Requires a `token`
 
 ## Project Strategies
 For a repository multiple project strategies will be tested and evaluated if applicable.
