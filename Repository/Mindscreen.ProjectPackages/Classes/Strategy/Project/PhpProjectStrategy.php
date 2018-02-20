@@ -3,10 +3,11 @@
 namespace Mindscreen\ProjectPackages\Strategy\Project;
 
 
-use Gitlab\Exception\RuntimeException;
 use Mindscreen\ProjectPackages\Domain\Model\Message;
 use Mindscreen\ProjectPackages\Domain\Model\Project;
 use Mindscreen\ProjectPackages\Domain\Model\Repository;
+use Mindscreen\ProjectPackages\Exception\FileNotFoundException;
+use Mindscreen\ProjectPackages\Exception\PermissionDeniedException;
 use Mindscreen\ProjectPackages\Service\ComposerService;
 use Mindscreen\ProjectPackages\Strategy\RepositorySource\RepositorySourceInterface;
 use Neos\Flow\Annotations as Flow;
@@ -47,8 +48,10 @@ class PhpProjectStrategy extends FallbackStrategy
         try {
             $composerLock = $this->repositorySource->getFileContents($this->getRepositoryId(), 'composer.lock', $this->getBranch());
             $this->project = $this->composerService->evaluateComposerLock(json_decode($composerLock), $this->project);
-        } catch (RuntimeException $e) {
-            $this->project->addMessage(new Message('No composer.lock file committed', 1514971315));
+        } catch (FileNotFoundException $e) {
+            $this->project->addMessage(new Message('No composer.lock file committed', $e->getCode()));
+        } catch (PermissionDeniedException $e) {
+            $this->project->addMessage(new Message('Could not read composer.lock file', $e->getCode()));
         }
         $this->persist();
     }

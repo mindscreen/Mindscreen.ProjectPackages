@@ -3,6 +3,10 @@ namespace Mindscreen\ProjectPackages\Strategy\RepositorySource;
 
 
 use Mindscreen\ProjectPackages\Domain\Model\Repository;
+use Mindscreen\ProjectPackages\Exception\FileNotFoundException;
+use Mindscreen\ProjectPackages\Exception\MissingConfigurationException;
+use Mindscreen\ProjectPackages\Exception\PermissionDeniedException;
+use Mindscreen\ProjectPackages\Exception\RepositoryNotFoundException;
 
 interface RepositorySourceInterface
 {
@@ -14,6 +18,7 @@ interface RepositorySourceInterface
 
     /**
      * @return Repository[]
+     * @throws MissingConfigurationException
      */
     public function getAllRepositories();
 
@@ -29,6 +34,8 @@ interface RepositorySourceInterface
      * Tries to initialize a repository object from API data
      * @param $repositoryId
      * @return Repository
+     * @throws RepositoryNotFoundException
+     * @throws PermissionDeniedException
      */
     public function getRepository($repositoryId);
 
@@ -59,6 +66,8 @@ interface RepositorySourceInterface
      * @param string $fileName
      * @param null $revision
      * @return string
+     * @throws FileNotFoundException
+     * @throws PermissionDeniedException
      */
     public function getFileContents($repositoryId, $fileName, $revision = null);
 }

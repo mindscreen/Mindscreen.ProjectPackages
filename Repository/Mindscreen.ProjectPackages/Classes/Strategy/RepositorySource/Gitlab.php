@@ -7,6 +7,7 @@ use Gitlab\Client;
 use Gitlab\Exception\RuntimeException;
 use Gitlab\ResultPager;
 use Mindscreen\ProjectPackages\Domain\Model\Repository;
+use Mindscreen\ProjectPackages\Exception\FileNotFoundException;
 
 class Gitlab extends AbstractRepositorySource
 {
@@ -24,6 +25,9 @@ class Gitlab extends AbstractRepositorySource
         return $this->client;
     }
 
+    /**
+     * @return array|Repository[]
+     */
     public function getAllRepositories()
     {
         $pager = new ResultPager($this->getClient());
@@ -35,6 +39,10 @@ class Gitlab extends AbstractRepositorySource
         return $result;
     }
 
+    /**
+     * @param string $repositoryId
+     * @return bool
+     */
     public function repositoryExists($repositoryId)
     {
         try {
@@ -45,6 +53,13 @@ class Gitlab extends AbstractRepositorySource
         }
     }
 
+    /**
+     * @param string $repositoryId
+     * @param string $fileName
+     * @param null $revision
+     * @return bool
+     * @throws FileNotFoundException
+     */
     public function fileExists($repositoryId, $fileName, $revision = null)
     {
         try {
@@ -55,10 +70,21 @@ class Gitlab extends AbstractRepositorySource
         }
     }
 
+    /**
+     * @param string $repositoryId
+     * @param string $fileName
+     * @param null $revision
+     * @return mixed|string
+     * @throws FileNotFoundException
+     */
     public function getFileContents($repositoryId, $fileName, $revision = null)
     {
         $ref = $revision === null ? 'master' : $revision;
-        return $this->getClient()->repositoryFiles()->getRawFile($repositoryId, $fileName, $ref);
+        try {
+            return $this->getClient()->repositoryFiles()->getRawFile($repositoryId, $fileName, $ref);
+        } catch (RuntimeException $e) {
+            throw new FileNotFoundException($e->getMessage(), 1519126673, $e);
+        }
     }
 
     /**
