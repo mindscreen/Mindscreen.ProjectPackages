@@ -35,7 +35,7 @@ class Project
     protected $repository;
 
     /**
-     * @ORM\Column(nullable=true)
+     * @ORM\Column(nullable=true, type="text")
      * @var string
      */
     protected $description;

@@ -19,6 +19,7 @@ class Message
     const SEVERITY_ERROR = 4;
 
     /**
+     * @ORM\Column(type="text")
      * @var string
      */
     protected $message;
