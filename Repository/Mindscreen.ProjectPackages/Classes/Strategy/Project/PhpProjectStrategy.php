@@ -42,12 +42,14 @@ class PhpProjectStrategy extends FallbackStrategy
     public function evaluate()
     {
         $this->initializeProject();
-        $composerJson = $this->repositorySource->getFileContents($this->getRepositoryId(), 'composer.json', $this->getBranch());
-        $this->project = $this->composerService->evaluateComposerJson(json_decode($composerJson), $this->project);
+        $composerJsonContent = $this->repositorySource->getFileContents($this->getRepositoryId(), 'composer.json', $this->getBranch());
+        $composerJson = json_decode($composerJsonContent);
+        $this->project = $this->composerService->evaluateComposerJson($composerJson, $this->project);
         $this->project->setPackageManager(Project::PACKAGEMGR_COMPOSER);
         try {
-            $composerLock = $this->repositorySource->getFileContents($this->getRepositoryId(), 'composer.lock', $this->getBranch());
-            $this->project = $this->composerService->evaluateComposerLock(json_decode($composerLock), $this->project);
+            $composerLockContent = $this->repositorySource->getFileContents($this->getRepositoryId(), 'composer.lock', $this->getBranch());
+            $composerLock = json_decode($composerLockContent);
+            $this->project = $this->composerService->evaluateComposerLock($composerJson, $composerLock, $this->project);
         } catch (FileNotFoundException $e) {
             $this->project->addMessage(new Message('No composer.lock file committed', $e->getCode()));
         } catch (PermissionDeniedException $e) {

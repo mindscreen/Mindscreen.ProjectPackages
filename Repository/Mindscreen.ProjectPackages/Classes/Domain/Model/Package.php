@@ -2,6 +2,8 @@
 
 namespace Mindscreen\ProjectPackages\Domain\Model;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Neos\Flow\Annotations as Flow;
 
@@ -37,10 +39,69 @@ class Package
      * @var Project
      */
     protected $project;
+
     /**
      * @var string
      */
     protected $packageManager;
+
+    /**
+     * @ORM\Column(nullable=true)
+     * @var int
+     */
+    protected $depth = null;
+
+    /**
+     * @ORM\ManyToMany(orphanRemoval=true)
+     * @var Collection<Package>
+     */
+    protected $dependencies;
+
+    /**
+     * @return int|null
+     */
+    public function getDepth()
+    {
+        return $this->depth;
+    }
+
+    /**
+     * @param int $depth
+     */
+    public function setDepth(int $depth): void
+    {
+        $this->depth = $depth;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getDependencies(): Collection
+    {
+        if ($this->dependencies === null) {
+            $this->dependencies = new ArrayCollection();
+        }
+        return $this->dependencies;
+    }
+
+    /**
+     * @param Collection $dependencies
+     */
+    public function setDependencies(Collection $dependencies): void
+    {
+        $this->dependencies = $dependencies;
+    }
+
+    /**
+     * @param Package $package
+     */
+    public function addDependency(Package $package): void
+    {
+        if ($this->dependencies === null) {
+            $this->dependencies = new ArrayCollection();
+        }
+        $this->dependencies->add($package);
+    }
 
     /**
      * @return Project
@@ -67,7 +128,11 @@ class Package
             'name' => $this->getName(),
             'packageManager' => $this->getPackageManager(),
             'version' => $this->getVersion(),
-            'additional' => $this->getAdditional()
+            'additional' => $this->getAdditional(),
+            'depth' => $this->getDepth(),
+            'dependencies' => array_map(
+                function(Package $d) { return $d->toArray(); },
+                $this->getDependencies()->toArray()),
         ];
     }
 
