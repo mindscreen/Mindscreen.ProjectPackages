@@ -2,14 +2,22 @@
     <div>
         <h3>Packages</h3>
         <div class="pp-project__packages">
-            <ul>
+            <!--<ul>
                 <li v-for="pkg in packages" :key="pkg.name" class="pp-project__packages__item">
                     <a :href="`https://npmjs.com/package/${pkg.name}`" target="_blank">{{pkg.name}}</a> {{pkg.version}}
                     <pp-badge v-if="pkg.additional && pkg.additional.devDependency">
                         dev-dependency
                     </pp-badge>
                 </li>
-            </ul>
+            </ul>-->
+            <pp-dependencyTree :packages="packages">
+                <div slot-scope="{props}">
+                    <a :href="`https://npmjs.com/package/${props.pkg.name}`" target="_blank">{{props.pkg.name}}</a> {{props.pkg.version}}
+                    <pp-badge v-if="props.pkg.additional && props.pkg.additional.devDependency">
+                        dev-dependency
+                    </pp-badge>
+                </div>
+            </pp-dependencyTree>
         </div>
     </div>
 </template>
@@ -39,8 +47,13 @@ import Vue from 'vue';
 import EventBus from '../EventBus';
 import { ProjectInfo, PackageVersionInformation } from '../../types';
 import { Prop, Component, Watch } from 'vue-property-decorator';
+import DependencyTree from '../DependencyTree.vue';
 
-@Component
+@Component({
+    components: {
+        'pp-dependencyTree': DependencyTree,
+    },
+})
 export default class ComposerProject extends Vue {
 
     @Prop()

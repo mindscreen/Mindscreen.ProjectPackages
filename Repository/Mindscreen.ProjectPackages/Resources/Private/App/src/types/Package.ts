@@ -11,6 +11,9 @@ type PackageVersionInformation = {
       host: string,
     },
   },
+  depth: number,
+  hasDependencies: boolean,
+  dependencies: PackageVersionInformation[],
 };
 
 type PackageFilter = {

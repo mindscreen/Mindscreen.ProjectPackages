@@ -2,17 +2,17 @@
     <div>
         <h3>Packages</h3>
         <div class="pp-project__packages">
-            <ul>
-                <li v-for="pkg in packages" :key="pkg.name" class="pp-project__packages__item">
-                    <a :href="`https://packagist.org/packages/${pkg.name}`" target="_blank">{{pkg.name}}</a> {{pkg.version}}
-                    <pp-badge v-if="pkg.additional && pkg.additional.dist && pkg.additional.dist.type === 'path'">
+            <pp-dependencyTree :packages="packages">
+                <div slot-scope="{props}">
+                    <a :href="`https://packagist.org/packages/${props.pkg.name}`" target="_blank">{{props.pkg.name}}</a> {{props.pkg.version}}
+                    <pp-badge v-if="props.pkg.additional && props.pkg.additional.dist && props.pkg.additional.dist.type === 'path'">
                         Local
                     </pp-badge>
-                    <pp-badge v-if="pkg.additional && pkg.additional.source" :iconUrl="getPkgIcon(pkg.additional.source.host)" :title="pkg.additional.source.host">
-                        <a v-if="pkg.additional.source.url" target="_blank" :href="getPkgUrl(pkg.additional.source.url)">Source</a>
+                    <pp-badge v-if="props.pkg.additional && props.pkg.additional.source" :iconUrl="getPkgIcon(props.pkg.additional.source.host)" :title="props.pkg.additional.source.host">
+                        <a v-if="props.pkg.additional.source.url" target="_blank" :href="getPkgUrl(props.pkg.additional.source.url)">Source</a>
                     </pp-badge>
-                </li>
-            </ul>
+                </div>
+            </pp-dependencyTree>
         </div>
     </div>
 </template>
@@ -42,8 +42,13 @@ import Vue from 'vue';
 import EventBus from '../EventBus';
 import { ProjectInfo, PackageVersionInformation } from '../../types';
 import { Prop, Component, Watch } from 'vue-property-decorator';
+import DependencyTree from '../DependencyTree.vue';
 
-@Component
+@Component({
+    components: {
+        'pp-dependencyTree': DependencyTree,
+    },
+})
 export default class ComposerProject extends Vue {
 
     @Prop()
