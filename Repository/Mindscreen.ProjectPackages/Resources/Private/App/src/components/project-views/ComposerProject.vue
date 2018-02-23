@@ -8,9 +8,12 @@
                     <pp-badge v-if="props.pkg.additional && props.pkg.additional.dist && props.pkg.additional.dist.type === 'path'">
                         Local
                     </pp-badge>
-                    <pp-badge v-if="props.pkg.additional && props.pkg.additional.source" :iconUrl="getPkgIcon(props.pkg.additional.source.host)" :title="props.pkg.additional.source.host">
-                        <a v-if="props.pkg.additional.source.url" target="_blank" :href="getPkgUrl(props.pkg.additional.source.url)">Source</a>
-                    </pp-badge>
+                    <pp-badge 
+                        v-if="props.pkg.additional && props.pkg.additional.source"
+                        :iconUrl="getPkgIcon(props.pkg.additional.source.host)"
+                        :title="props.pkg.additional.source.host"
+                        :link="props.pkg.additional.source.url ? getPkgUrl(props.pkg.additional.source.url) : null"
+                        >Source</pp-badge>
                 </div>
             </pp-dependencyTree>
         </div>

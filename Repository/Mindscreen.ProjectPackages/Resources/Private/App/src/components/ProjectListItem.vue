@@ -8,8 +8,8 @@
                 v-if="project.packageManager !== 'unknown'"
                 :icon="project.packageManager"
                 :title="project.packageManager">{{project.packageManager}}</pp-badge>
-            <pp-badge :iconUrl="getVcsIcon(project.repository.url)" >
-                <a :href="project.repository.url" target="_blank">Project<span class="visuallyhidden"> on VCS</span></a>
+            <pp-badge :iconUrl="getVcsIcon(project.repository.url)" :link="project.repository.url" >
+                Project<span class="visuallyhidden"> on VCS</span>
             </pp-badge>
             <pp-badge v-if="project.type && project.type !== ''">{{project.type}}</pp-badge>
         </div>
