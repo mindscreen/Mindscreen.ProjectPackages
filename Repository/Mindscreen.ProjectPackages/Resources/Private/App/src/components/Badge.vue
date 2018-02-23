@@ -29,6 +29,7 @@
         display: inline-block;
         height: 22px;
         padding: 4px 6px;
+        position: relative;
         top: -3px;
         color: $colorFont !important;
         font-size: 12px;
@@ -39,7 +40,6 @@
 
         &.badge_icon {
             padding-left: 28px;
-            position: relative;
             .badge_icon__icon {
                 height: 22px;
                 width: 24px;
