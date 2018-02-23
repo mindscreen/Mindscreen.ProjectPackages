@@ -52,10 +52,10 @@ class Package
     protected $depth = null;
 
     /**
-     * @ORM\ManyToMany(orphanRemoval=true)
+     * @ORM\ManyToMany(orphanRemoval=true, cascade={"persist"})
      * @ORM\JoinTable(name="mindscreen_projectpackages_domain_model_package_join",
-     *     joinColumns={@ORM\JoinColumn(name="package", referencedColumnName="persistence_object_identifier")},
-     *     inverseJoinColumns={@ORM\JoinColumn(name="dependency", referencedColumnName="persistence_object_identifier")}
+     *     joinColumns={@ORM\JoinColumn(name="package", referencedColumnName="persistence_object_identifier", onDelete="CASCADE")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="dependency", referencedColumnName="persistence_object_identifier", onDelete="CASCADE")},
      * )
      * @var Collection<Package>
      */
@@ -72,7 +72,7 @@ class Package
     /**
      * @param int $depth
      */
-    public function setDepth(int $depth): void
+    public function setDepth($depth): void
     {
         $this->depth = $depth;
     }
