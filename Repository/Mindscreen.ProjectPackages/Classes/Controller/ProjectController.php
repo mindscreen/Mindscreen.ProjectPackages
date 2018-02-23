@@ -115,6 +115,7 @@ class ProjectController extends ActionController
     {
         $project = $this->projectRepository->findOneByKey($projectKey);
         $packages = $this->packageRepository->findByProject($project)->toArray();
+        $packages = array_filter($packages, function(Package $package) { return $package->getDepth() === 0; });
         $packages = array_map(function (Package $package) {
             return $package->toArray();
         }, $packages);

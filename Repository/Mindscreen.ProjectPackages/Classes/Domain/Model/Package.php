@@ -53,6 +53,10 @@ class Package
 
     /**
      * @ORM\ManyToMany(orphanRemoval=true)
+     * @ORM\JoinTable(name="mindscreen_projectpackages_domain_model_package_join",
+     *     joinColumns={@ORM\JoinColumn(name="package", referencedColumnName="persistence_object_identifier")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="dependency", referencedColumnName="persistence_object_identifier")}
+     * )
      * @var Collection<Package>
      */
     protected $dependencies;
@@ -120,9 +124,10 @@ class Package
     }
 
     /**
+     * @param null $depth
      * @return array
      */
-    public function toArray()
+    public function toArray($depth = null)
     {
         return [
             'name' => $this->getName(),
@@ -130,9 +135,10 @@ class Package
             'version' => $this->getVersion(),
             'additional' => $this->getAdditional(),
             'depth' => $this->getDepth(),
-            'dependencies' => array_map(
-                function(Package $d) { return $d->toArray(); },
-                $this->getDependencies()->toArray()),
+            'hasDependencies' => $this->getDependencies()->count() > 0,
+            'dependencies' => $depth < 3 ? array_map(
+                function(Package $d) use ($depth) { return $d->toArray($depth === null ? 1 : $depth + 1); },
+                $this->getDependencies()->toArray()) : [],
         ];
     }
 
