@@ -1,6 +1,7 @@
 <template>
     <div class="pp-treeview">
         <div class="pp-treeview__controls">
+            <input type="search" @keyup="filterTree" @change="filterTree" v-model="treeFilter">
             <button class="pp-treeview__controls__action" @click="expandAll">Expand all</button>
             <button class="pp-treeview__controls__action" @click="collapseAll">Collapse all</button>
         </div>
@@ -50,6 +51,7 @@ import { PackageVersionInformation } from '../types/Package';
 export const Actions = {
     CollapseAll: 'DependencyTree_CollapseAll',
     ExpandAll: 'DependencyTree_ExpandAll',
+    Filter: 'DependencyTree_Filter',
 };
 
 @Component({
@@ -58,8 +60,23 @@ export const Actions = {
     },
 })
 export default class DependencyTree extends Vue {
+    treeFilter: string = '';
+    filterTimeout: number|null = null;
     @Prop()
     packages: PackageVersionInformation[];
+
+    filterTree(): void {
+        if (this.filterTimeout !== null) {
+            clearTimeout(this.filterTimeout);
+        }
+        this.filterTimeout = setTimeout(() => {
+            const pattern = this.treeFilter === '' ? null : new RegExp('.*?' + this.treeFilter + '.*?', 'i');
+            EventBus.$emit(Actions.Filter, {
+                name: pattern,
+            });
+            this.filterTimeout = null;
+        }, 1500);
+    }
 
     expandAll(): void {
         EventBus.$emit(Actions.ExpandAll, null);

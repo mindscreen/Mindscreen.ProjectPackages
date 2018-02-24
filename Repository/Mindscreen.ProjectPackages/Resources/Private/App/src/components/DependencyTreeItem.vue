@@ -1,9 +1,9 @@
 <template>
-    <div v-if="pkg" :aria-expanded="expanded">
+    <div v-if="pkg && (show || showFromChild)" :aria-expanded="expanded">
         <div>
             <button :class="{'pp-treeview__item__toggle': true, 'pp-treeview__item__toggle--open': expanded}"
                     v-if="pkg.hasDependencies"
-                    @click="expanded = !expanded">
+                    @click="expand(!expanded)">
                 <span class="pp-treeview__item__toggle--icon"></span>
                 <span class="visuallyhidden">collapse</span>
             </button>
@@ -18,6 +18,8 @@
                 :depth="depth + 1"
                 :key="index"
                 :pkg="dependency"
+                @expanded="expand(true)"
+                @shouldShow="showParent()"
             >
                 <template slot-scope="_" slot="item">
                     <slot :pkg="_.pkg" name="item"></slot>
@@ -87,14 +89,39 @@ import { Actions } from './DependencyTree.vue';
 })
 export default class DependencyTreeItem extends Vue {
     expanded: boolean = false;
+    show: boolean = true;
+    showFromChild: boolean = false;
     @Prop()
     depth: number;
     @Prop()
     pkg: PackageVersionInformation;
 
+    expand(force: boolean): void {
+        this.expanded = force;
+        if (force) {
+            this.$emit('expanded');
+        }
+    }
+
+    showParent() {
+        this.showFromChild = true;
+        this.$emit('shouldShow');
+    }
+
     mounted(): void {
-        EventBus.$on(Actions.CollapseAll, () => this.expanded = false);
-        EventBus.$on(Actions.ExpandAll, () => this.expanded = true);
+        EventBus.$on(Actions.CollapseAll, () => this.expand(false));
+        EventBus.$on(Actions.ExpandAll, () => this.expand(true));
+        EventBus.$on(Actions.Filter, (filter: {name: RegExp|null}) => {
+            if (filter.name === null) {
+                this.show = true;
+            } else {
+                this.show = filter.name.test(this.pkg.name);
+            }
+            if (this.show) {
+                this.$emit('expanded');
+                this.$emit('shouldShow');
+            }
+        });
     }
 }
 </script>
