@@ -9,6 +9,7 @@
             </button>
             <div class="pp-treeview__item">
                 <slot :pkg="pkg" name="item"></slot>
+                <pp-badge v-if="pkg.duplicate" color="grey" title="This package already appeared higher up in the tree.">Duplicate</pp-badge>
             </div>
         </div>
         <div v-if="expanded" class="pp-treeview__item__children">
@@ -30,10 +31,15 @@
 @import '../scss/settings.scss';
 
 .pp-treeview__item {
-    display: inline-block;
+    display: inline-flex;
+    align-items: baseline;
     line-height: 24px;
     color: $colorFont;
     
+    &>div {
+        margin-right: 4px;
+    }
+
     &__children {
         padding-left: 20px;
     }

@@ -2,7 +2,7 @@
     <span
         :is="link ? 'a' : 'span'"
         :href="link"
-        :class="{'badge': true, 'badge_icon': icon || iconUrl}"
+        :class="badgeClass"
         :title="title || null"
         :target="link ? '_blank' : false"
         >
@@ -38,6 +38,18 @@
         border-radius: $border-radius;
         background: linear-gradient(0deg, $colorBgDark 0%, $colorBgLight 5%, $colorBgLight 95%, $colorBgHover 100%);
 
+        @each $colorName, $color in
+            (blue, #0575bf),
+            (orange, #f8791f),
+            (green, #7ac732),
+            (red, #ce3024),
+            (grey, #7c7c7c)
+        {
+            &--#{$colorName} {
+                background: linear-gradient(0deg, darken($color, 20%) 0%, $color 5%, $color 95%, lighten($color, 20%) 100%);
+            }
+        }
+
         &.badge_icon {
             padding-left: 28px;
             .badge_icon__icon {
@@ -55,32 +67,10 @@
             }
 
             .badge_icon-- {
-                &composer {
-                    background-image: url("/_Resources/Static/Packages/Mindscreen.ProjectPackages/Build/assets/composer.png");
-                }
-
-                &vagrant {
-                    background-image: url("/_Resources/Static/Packages/Mindscreen.ProjectPackages/Build/assets/vagrant.png");
-                }
-
-                &gitlab {
-                    background-image: url("/_Resources/Static/Packages/Mindscreen.ProjectPackages/Build/assets/gitlab.png");
-                }
-
-                &npm {
-                    background-image: url("/_Resources/Static/Packages/Mindscreen.ProjectPackages/Build/assets/npm.png");
-                }
-
-                &yarn {
-                    background-image: url("/_Resources/Static/Packages/Mindscreen.ProjectPackages/Build/assets/yarn.png");
-                }
-
-                &github {
-                    background-image: url("/_Resources/Static/Packages/Mindscreen.ProjectPackages/Build/assets/github.png");
-                }
-
-                &bitbucket {
-                    background-image: url("/_Resources/Static/Packages/Mindscreen.ProjectPackages/Build/assets/bitbucket.png");
+                @each $icon in (composer, vagrant, gitlab, npm, yarn, github, bitbucket) {
+                    &#{$icon} {
+                        background-image: url("/_Resources/Static/Packages/Mindscreen.ProjectPackages/Build/assets/#{$icon}.png");
+                    }
                 }
             }
         }
@@ -97,11 +87,23 @@
         @Prop() iconUrl?: string;
         @Prop() title?: string;
         @Prop() link?: string;
+        @Prop() color?: string;
+
+        get badgeClass(): string {
+            let className = 'badge';
+            if (this.icon || this.iconUrl) {
+                className += ` badge_icon`;
+            }
+            if (this.color) {
+                className += ` badge--${this.color}`;
+            }
+            return className;
+        }
 
         get iconClass(): string {
             let className = 'badge_icon__icon';
             if (this.icon) {
-                className += ` badge_icon badge_icon--${this.icon}`;
+                className += ` badge_icon--${this.icon}`;
             }
             return className;
         }

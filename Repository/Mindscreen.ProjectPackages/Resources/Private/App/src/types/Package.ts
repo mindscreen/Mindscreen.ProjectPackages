@@ -13,6 +13,7 @@ type PackageVersionInformation = {
   },
   depth: number,
   hasDependencies: boolean,
+  duplicate: boolean,
   dependencies: PackageVersionInformation[],
 };
 
