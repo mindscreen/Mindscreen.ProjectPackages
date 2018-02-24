@@ -57,6 +57,7 @@ class Package
      *     joinColumns={@ORM\JoinColumn(name="package", referencedColumnName="persistence_object_identifier", onDelete="CASCADE")},
      *     inverseJoinColumns={@ORM\JoinColumn(name="dependency", referencedColumnName="persistence_object_identifier", onDelete="CASCADE")},
      * )
+     * @ORM\OrderBy({"name" = "ASC"})
      * @var Collection<Package>
      */
     protected $dependencies;
@@ -129,16 +130,25 @@ class Package
      */
     public function toArray($depth = null)
     {
+        $dependencies = [];
+        $duplicate = false;
+        if ($depth <= $this->getDepth()) {
+            $dependencies = array_map(
+                function(Package $d) use ($depth) { return $d->toArray($depth === null ? 1 : $depth + 1); },
+                $this->getDependencies()->toArray());
+        } else {
+            $duplicate = true;
+        }
         return [
             'name' => $this->getName(),
             'packageManager' => $this->getPackageManager(),
             'version' => $this->getVersion(),
             'additional' => $this->getAdditional(),
             'depth' => $this->getDepth(),
-            'hasDependencies' => $this->getDependencies()->count() > 0,
-            'dependencies' => $depth < 3 ? array_map(
-                function(Package $d) use ($depth) { return $d->toArray($depth === null ? 1 : $depth + 1); },
-                $this->getDependencies()->toArray()) : [],
+            'renderDepth' => $depth,
+            'hasDependencies' => count($dependencies) > 0,
+            'duplicate' => $duplicate,
+            'dependencies' => $dependencies
         ];
     }
 

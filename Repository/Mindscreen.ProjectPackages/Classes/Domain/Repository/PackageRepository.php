@@ -10,5 +10,8 @@ use Neos\Flow\Persistence\Doctrine\Repository;
  */
 class PackageRepository extends Repository
 {
-
+    public function findByProjectAndDepth($project, $depth = 0)
+    {
+        return $this->findBy(['project' => $project, 'depth' => $depth], ['name'=>'ASC']);
+    }
 }

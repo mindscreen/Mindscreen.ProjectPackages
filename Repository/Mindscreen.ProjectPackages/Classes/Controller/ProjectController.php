@@ -114,8 +114,10 @@ class ProjectController extends ActionController
     public function packagesAction($projectKey)
     {
         $project = $this->projectRepository->findOneByKey($projectKey);
-        $packages = $this->packageRepository->findByProject($project)->toArray();
-        $packages = array_filter($packages, function(Package $package) { return $package->getDepth() === 0; });
+//        $packages = $this->packageRepository->findByProject($project)->toArray();
+        $packages = $this->packageRepository->findByProjectAndDepth($project);
+//        \Neos\Flow\var_dump($packages);
+//        $packages = array_filter($packages, function(Package $package) { return $package->getDepth() === 0; });
         $packages = array_map(function (Package $package) {
             return $package->toArray();
         }, $packages);
