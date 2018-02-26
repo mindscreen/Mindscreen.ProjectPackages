@@ -102,7 +102,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import EventBus from './EventBus';
-import { Message, ProjectInfo, PackageVersionInformation } from '../types';
+import { Message, ProjectInfo } from '../types';
 import { views } from './project-views/index';
 import { getHostIcon } from '../util';
 

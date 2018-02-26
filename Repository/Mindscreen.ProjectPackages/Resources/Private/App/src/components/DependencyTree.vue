@@ -46,7 +46,7 @@ import Vue from 'vue';
 import { Component, Prop } from 'vue-property-decorator';
 import DependencyTreeItem from './DependencyTreeItem.vue';
 import EventBus from './EventBus';
-import { PackageVersionInformation } from '../types/Package';
+import { PackageInformation } from '../types/Package';
 
 export const Actions = {
     CollapseAll: 'DependencyTree_CollapseAll',
@@ -63,7 +63,7 @@ export default class DependencyTree extends Vue {
     treeFilter: string = '';
     filterTimeout: number|null = null;
     @Prop()
-    packages: PackageVersionInformation[];
+    packages: PackageInformation[];
 
     filterTree(): void {
         if (this.filterTimeout !== null) {

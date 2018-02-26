@@ -1,8 +1,7 @@
-type PackageVersionInformation = {
+type PackageInformation = {
   name: string,
   version: string,
   packageManager: string,
-  usages?: number,
   additional?: null | {
     type?: string,
     source?: {
@@ -12,9 +11,17 @@ type PackageVersionInformation = {
     },
   },
   depth: number,
+  renderDepth: number|null,
   hasDependencies: boolean,
   duplicate: boolean,
-  dependencies: PackageVersionInformation[],
+  dependencies: PackageInformation[],
+};
+
+type PackageVersionInformation = {
+  name: string,
+  version: string,
+  packageManager: string,
+  usages: number,
 };
 
 type PackageFilter = {
@@ -22,4 +29,8 @@ type PackageFilter = {
   packageManager: string|null,
 };
 
-export { PackageVersionInformation, PackageFilter };
+export {
+  PackageInformation,
+  PackageVersionInformation,
+  PackageFilter,
+};

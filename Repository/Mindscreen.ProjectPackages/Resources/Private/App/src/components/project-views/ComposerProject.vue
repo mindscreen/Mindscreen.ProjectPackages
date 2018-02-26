@@ -43,7 +43,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import EventBus from '../EventBus';
-import { ProjectInfo, PackageVersionInformation } from '../../types';
+import { ProjectInfo, PackageInformation } from '../../types';
 import { Prop, Component, Watch } from 'vue-property-decorator';
 import DependencyTree from '../DependencyTree.vue';
 
@@ -57,7 +57,7 @@ export default class ComposerProject extends Vue {
     @Prop()
     project: ProjectInfo;
 
-    packages: PackageVersionInformation[] = [];
+    packages: PackageInformation[] = [];
 
     @Watch('project')
     loadPackages(): void {

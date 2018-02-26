@@ -80,7 +80,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import { Component, Prop } from 'vue-property-decorator';
-import { PackageVersionInformation } from '../types/Package';
+import { PackageInformation } from '../types/Package';
 import EventBus from './EventBus';
 import { Actions } from './DependencyTree.vue';
 
@@ -94,7 +94,7 @@ export default class DependencyTreeItem extends Vue {
     @Prop()
     depth: number;
     @Prop()
-    pkg: PackageVersionInformation;
+    pkg: PackageInformation;
 
     expand(force: boolean): void {
         this.expanded = force;

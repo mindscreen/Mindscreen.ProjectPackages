@@ -160,11 +160,16 @@ Get all packages found for the given project
 `packageKey` (string): the `key` property returned by `/projects/list` or `/packages/projects`  
 **Return-type**  
 ```ts
-PackageVersionInformation: {
+PackageInformation: {
   name: string,
   version: string,
   packageManager: string,
-  additional?: any[]
+  additional?: any[],
+  depth: number,
+  renderDepth: number|null,
+  hasDependencies: boolean,
+  duplicate: boolean,
+  dependencies: PackageInformation[],
 }[]
 ```
 Note the difference in this return type having the additional field `additional` with arbitrary data defined by a [project strategy](#project-strategies) and is missing the field `usages`.
