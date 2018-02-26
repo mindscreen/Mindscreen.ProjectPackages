@@ -22,9 +22,11 @@ type PackageVersionInformation = {
   version: string,
   packageManager: string,
   usages: number,
+  depth: number,
 };
 
 type PackageFilter = {
+  depth: number|null,
   name: RegExp,
   packageManager: string|null,
 };

@@ -44,9 +44,9 @@ class PackageController extends ActionController
     public function listAction($grouped = false)
     {
         $query = $this->packageRepository->createDqlQuery('
-        SELECT p.name, p.version, p.packageManager, count(p) as usages FROM ' . Package::class . ' p
+        SELECT p.name, p.version, p.packageManager, count(p) as usages, p.depth FROM ' . Package::class . ' p
         JOIN p.project r
-        GROUP BY p.name, p.version, p.packageManager
+        GROUP BY p.name, p.version, p.packageManager, p.depth
         ORDER BY p.name ASC, usages DESC
         ');
         /** @var array $queryResult */

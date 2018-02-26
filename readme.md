@@ -92,6 +92,7 @@ PackageVersionInformation: {
   version: string,
   packageManager: string,
   usages: number,
+  depth: number,
 }[]
 ```
 If `grouped`, returns `[[PackageVersionInformation]]`.

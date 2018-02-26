@@ -41,6 +41,8 @@
         input[type=checkbox] {
             opacity: 0;
             position: absolute;
+            width: 1px;
+            height: 1px;
             &:checked ~ div {
                 background-color: $colorBgHover;
             }
@@ -95,7 +97,7 @@
     @Component
     export default class PackageListItem extends Vue {
 
-        collapsed: boolean = false;
+        collapsed: boolean = true;
 
         selected: boolean = false;
 
@@ -115,6 +117,10 @@
 
         get packageManager() {
             return this.packageVersions[0].packageManager;
+        }
+
+        get depths(): number[] {
+            return this.packageVersions.map(pkg => pkg.depth);
         }
 
         toggleSelected(): void {
@@ -172,6 +178,7 @@
             EventBus.$on('PackageList_Filter', (filter: PackageFilter) => {
                 this.shown =
                     (filter.packageManager === null || filter.packageManager === this.packageManager) &&
+                    (filter.depth === null || this.depths.indexOf(filter.depth) >= 0) &&
                     filter.name.test(this.name);
             });
             EventBus.$on('PackageList_Reset', () => {

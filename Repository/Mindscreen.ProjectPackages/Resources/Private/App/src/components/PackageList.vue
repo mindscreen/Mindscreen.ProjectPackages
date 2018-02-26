@@ -21,6 +21,11 @@
                         placeholder="Package-manager"
                         :value="packageManagerFilter"
                         :on-change="setPackageManagerFilter" />
+                <div>
+                    <pp-checkbox
+                        label="Only show root-level packages"
+                        v-model="onlyRootDependencies"></pp-checkbox>
+                </div>
             </div>
         </div>
         <div class="pp-packageList-list">
@@ -72,7 +77,7 @@
     import PackageListItem from './PackageListItem.vue';
     import EventBus from './EventBus';
     import { PackageVersionInformation } from '../types';
-    import { Component } from 'vue-property-decorator';
+    import { Component, Watch } from 'vue-property-decorator';
 
     @Component({
         components: {
@@ -88,6 +93,8 @@
 
         showFilters: boolean = false;
 
+        onlyRootDependencies: boolean = false;
+
         private packageManagerList: string[] = [];
 
         get packageManagers() {
@@ -95,7 +102,7 @@
         }
 
         get filtersUsed() {
-            return this.packageManagerFilter !== null;
+            return this.packageManagerFilter !== null || this.onlyRootDependencies;
         }
 
         setPackageManagerFilter(value: string): void {
@@ -103,9 +110,11 @@
             this.updateFilter();
         }
 
+        @Watch('onlyRootDependencies')
         updateFilter(): void {
             const pattern = new RegExp('.*?' + this.filter + '.*?', 'i');
             EventBus.$emit('PackageList_Filter', {
+                depth: this.onlyRootDependencies ? 0 : null,
                 name: pattern,
                 packageManager: this.packageManagerFilter,
             });

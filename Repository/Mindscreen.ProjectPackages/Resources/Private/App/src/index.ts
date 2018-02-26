@@ -5,6 +5,7 @@ import Project from './components/Project.vue';
 import SiteHeader from './components/SiteHeader.vue';
 import Badge from './components/Badge.vue';
 import Button from './components/Button.vue';
+import Checkbox from './components/Checkbox.vue';
 import EventBus from './components/EventBus';
 import { ProjectInfo } from './types';
 import { Component } from 'vue-property-decorator';
@@ -12,6 +13,7 @@ import vSelect from 'vue-select';
 
 Vue.component('pp-badge', Badge);
 Vue.component('pp-button', Button);
+Vue.component('pp-checkbox', Checkbox);
 Vue.component('v-select', vSelect);
 
 @Component({
