@@ -1,16 +1,17 @@
 <template>
     <div class="pp-treeview">
         <div class="pp-treeview__controls">
-            <input type="search" @keyup="filterTree" @change="filterTree" v-model="treeFilter">
+            <input type="search" v-model="treeFilter" placeholder="Filter">
             <button class="pp-treeview__controls__action" @click="expandAll">Expand all</button>
             <button class="pp-treeview__controls__action" @click="collapseAll">Collapse all</button>
         </div>
         <div class="pp-treeview__tree">
             <pp-dependencyTreeItem
-                v-for="(pkg, index) in packages"
+                v-for="(pkg, index) in filteredPackages"
                 :depth="0"
                 :key="index"
                 :pkg="pkg"
+                :filterActive="filterActive"
             >
                 <template slot="item" slot-scope="_">
                     <slot :props="_"></slot>
@@ -32,6 +33,11 @@
             color: $colorFontLink;
         }
         margin-bottom: 16px;
+        input {
+            min-width: 33%;
+            max-width: 50%;
+            @include input
+        }
     }
     
     &__tree {
@@ -51,7 +57,29 @@ import { PackageInformation } from '../types/Package';
 export const Actions = {
     CollapseAll: 'DependencyTree_CollapseAll',
     ExpandAll: 'DependencyTree_ExpandAll',
-    Filter: 'DependencyTree_Filter',
+};
+
+type DependencyTreeFilter = {
+    name: RegExp|null,
+};
+
+const matchesFilter = (pkg: PackageInformation, filter: DependencyTreeFilter) =>
+    filter.name === null || filter.name.test(pkg.name);
+
+const filterDependencyTree = (packages: PackageInformation[], filter: DependencyTreeFilter): PackageInformation[] => {
+    const result: PackageInformation[] = [];
+    packages.forEach(pkg => {
+        const pkg2 = (Object as any).assign({}, pkg);
+        const filteredDependencies = pkg2.hasDependencies && !pkg2.duplicate
+            ? filterDependencyTree(pkg2.dependencies, filter)
+            : [];
+        if (filteredDependencies.length > 0 || matchesFilter(pkg2, filter)) {
+            pkg2.dependencies = filteredDependencies;
+            pkg2.hasDependencies = filteredDependencies.length > 0;
+            result.push(pkg2);
+        }
+    });
+    return result;
 };
 
 @Component({
@@ -65,17 +93,19 @@ export default class DependencyTree extends Vue {
     @Prop()
     packages: PackageInformation[];
 
-    filterTree(): void {
-        if (this.filterTimeout !== null) {
-            clearTimeout(this.filterTimeout);
-        }
-        this.filterTimeout = setTimeout(() => {
-            const pattern = this.treeFilter === '' ? null : new RegExp('.*?' + this.treeFilter + '.*?', 'i');
-            EventBus.$emit(Actions.Filter, {
-                name: pattern,
-            });
-            this.filterTimeout = null;
-        }, 1500);
+    get filteredPackages() {
+        const packages = this.packages.slice();
+        return filterDependencyTree(packages, this.filter);
+    }
+
+    get filter() {
+        return {
+            name: this.treeFilter === '' ? null : new RegExp('.*?' + this.treeFilter + '.*?', 'i'),
+        };
+    }
+
+    get filterActive() {
+        return this.treeFilter !== '';
     }
 
     expandAll(): void {

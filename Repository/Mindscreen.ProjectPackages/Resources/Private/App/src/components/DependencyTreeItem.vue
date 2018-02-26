@@ -1,13 +1,14 @@
 <template>
     <div v-if="pkg && (show || showFromChild)" :aria-expanded="expanded">
-        <div>
+        <div class="pp-treeview__item">
             <button :class="{'pp-treeview__item__toggle': true, 'pp-treeview__item__toggle--open': expanded}"
                     v-if="pkg.hasDependencies"
-                    @click="expand(!expanded)">
+                    :title="expanded ? 'collapse' : 'expand'"
+                    @click="expand(!isExpanded)">
                 <span class="pp-treeview__item__toggle--icon"></span>
-                <span class="visuallyhidden">collapse</span>
+                <span class="visuallyhidden" v-html="expanded ? 'collapse' : 'expand'"></span>
             </button>
-            <div class="pp-treeview__item">
+            <div class="pp-treeview__item__label">
                 <slot :pkg="pkg" name="item"></slot>
                 <pp-badge v-if="pkg.duplicate" color="grey" title="This package already appeared higher up in the tree.">Duplicate</pp-badge>
             </div>
@@ -18,8 +19,8 @@
                 :depth="depth + 1"
                 :key="index"
                 :pkg="dependency"
+                :filterActive="filterActive"
                 @expanded="expand(true)"
-                @shouldShow="showParent()"
             >
                 <template slot-scope="_" slot="item">
                     <slot :pkg="_.pkg" name="item"></slot>
@@ -33,13 +34,21 @@
 @import '../scss/settings.scss';
 
 .pp-treeview__item {
-    display: inline-flex;
-    align-items: baseline;
-    line-height: 24px;
-    color: $colorFont;
-    
-    &>div {
-        margin-right: 4px;
+
+    > button + .pp-treeview__item__label {
+        margin-left: 0;
+    }
+
+    &__label {
+        display: inline-flex;
+        align-items: baseline;
+        line-height: 24px;
+        color: $colorFont;
+        margin-left: 20px;
+        
+        > div {
+            margin-right: 4px;
+        }
     }
 
     &__children {
@@ -88,39 +97,31 @@ import { Actions } from './DependencyTree.vue';
     name: 'pp-dependencyTreeItem',
 })
 export default class DependencyTreeItem extends Vue {
-    expanded: boolean = false;
+    isExpanded: boolean = false;
     show: boolean = true;
-    showFromChild: boolean = false;
     @Prop()
     depth: number;
     @Prop()
     pkg: PackageInformation;
+    @Prop()
+    filterActive: boolean;
+
+    get expanded(): boolean {
+        return this.filterActive || this.isExpanded;
+    }
 
     expand(force: boolean): void {
-        this.expanded = force;
+        this.isExpanded = force;
         if (force) {
             this.$emit('expanded');
         }
     }
 
-    showParent() {
-        this.showFromChild = true;
-        this.$emit('shouldShow');
-    }
-
     mounted(): void {
         EventBus.$on(Actions.CollapseAll, () => this.expand(false));
-        EventBus.$on(Actions.ExpandAll, () => this.expand(true));
-        EventBus.$on(Actions.Filter, (filter: {name: RegExp|null}) => {
-            if (filter.name === null) {
-                this.show = true;
-            } else {
-                this.show = filter.name.test(this.pkg.name);
-            }
-            if (this.show) {
-                this.$emit('expanded');
-                this.$emit('shouldShow');
-            }
+        EventBus.$on(Actions.ExpandAll, () => {
+            this.expand(true);
+            // EventBus.$emit(Actions.ExpandAll);
         });
     }
 }
