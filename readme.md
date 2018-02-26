@@ -68,6 +68,8 @@ Keep in mind that some repository-source methods might take a long time: e.g. se
 * `project:updatefromsource --source-identifier` Update all repositories from the specified source
 * `project:deletebysource --source-identifier` Delete all repositories (and associated information) originating the specified source (e.g. after renaming a source)
 * `project:listsources` List all configured repository-sources
+* `project:updateRepositoryByUrl --repository-url` Given any repository URL (dependending on the repository-source) it tries to match a configured source and update the repository from there. URLs might for example be `https://git.example.com/vendor/project` or `user@git.example.com:vendor/project.git`.
+* `project:updateRepositories --repositories` Given multiple URLs separated by comma, the are interpreted like `project:updateRepositoryByUrl`.
 
 ## UI
 The application serves a single vue app and several json [endpoints](#endpoints).

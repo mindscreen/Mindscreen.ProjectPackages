@@ -99,13 +99,14 @@ class GithubApi
     }
 
     /**
+     * @internal
      * @param string $endpoint
      * @param array $arguments
      * @param string $method
      * @param string $data
      * @return \Neos\Flow\Http\Response|null
      */
-    protected function request($endpoint, array $arguments = array(), $method = 'GET', $data = null)
+    public function request($endpoint, array $arguments = array(), $method = 'GET', $data = null)
     {
         $url = $this->baseUri . $endpoint;
         if ($method === 'GET') {
