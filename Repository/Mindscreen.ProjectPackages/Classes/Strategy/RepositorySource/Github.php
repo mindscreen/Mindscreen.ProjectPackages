@@ -148,4 +148,26 @@ class Github extends AbstractRepositorySource
     {
         return $this->api->getContent($repositoryId, $fileName, $revision);
     }
+
+    /**
+     * Return a Repository if it is accessible with the given URL or null,
+     * if not available.
+     * @param string $repositoryUrl
+     * @return Repository|null
+     */
+    public function getRepositoryByUrl($repositoryUrl)
+    {
+        $matches = [];
+        if (preg_match('/github\.com(:|\/)([^\/]+)\/(.+?)(\.git|$)/', $repositoryUrl, $matches) === false) {
+            return null;
+        }
+        $response = $this->api->request('/repos/' . $matches[2] . '/' . $matches[3]);
+        if ($response->getStatusCode() == 200) {
+            $data = json_decode($response->getBody(), true);
+            if ($data !== null) {
+                return $this->createRepository($data);
+            }
+        }
+        return null;
+    }
 }

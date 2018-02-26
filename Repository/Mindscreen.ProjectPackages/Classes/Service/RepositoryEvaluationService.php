@@ -69,7 +69,7 @@ class RepositoryEvaluationService
         }
     }
 
-    protected function evaluateRepository(RepositorySourceInterface $repositorySource, Repository $repository)
+    public function evaluateRepository(RepositorySourceInterface $repositorySource, Repository $repository)
     {
         $this->repositoryRepository->removeBySourceAndId($repositorySource->getIdentifier(), $repository->getId());
         $strategyClassNames = $this->reflectionService->getAllImplementationClassNamesForInterface(ProjectStrategyInterface::class);

@@ -40,6 +40,14 @@ interface RepositorySourceInterface
     public function getRepository($repositoryId);
 
     /**
+     * Return a Repository if it is accessible with the given URL or null,
+     * if not available.
+     * @param string $repositoryUrl
+     * @return Repository|null
+     */
+    public function getRepositoryByUrl($repositoryUrl);
+
+    /**
      * Return whether a requested file exists in the given repository
      * @param string $repositoryId
      * @param string $fileName

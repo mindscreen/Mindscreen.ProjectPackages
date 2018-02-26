@@ -16,15 +16,6 @@ class Gitlab extends AbstractRepositorySource
      */
     protected $client;
 
-    protected function getClient()
-    {
-        if ($this->client === null) {
-            $this->client = Client::create($this->options['url']);
-            $this->client->authenticate($this->options['token']);
-        }
-        return $this->client;
-    }
-
     /**
      * @return array|Repository[]
      */
@@ -39,6 +30,35 @@ class Gitlab extends AbstractRepositorySource
         return $result;
     }
 
+    protected function getClient()
+    {
+        if ($this->client === null) {
+            $this->client = Client::create($this->options['url']);
+            $this->client->authenticate($this->options['token']);
+        }
+        return $this->client;
+    }
+
+    /**
+     * @param array $data Data as returned from the API Client
+     * @return Repository
+     */
+    protected function createRepository(array $data)
+    {
+        $repository = new Repository();
+        $repository->setRepositorySource($this->getIdentifier());
+        $repository->setId($data['id']);
+        $repository->setName($data['name']);
+        $repository->setNamespace($data['namespace']['name']);
+        $repository->setWebUrl($data['web_url']);
+        if (array_key_exists('default_branch', $data) && $data['default_branch'] !== null) {
+            $repository->setDefaultBranch($data['default_branch']);
+        }
+        $repository->setCreated(new \DateTime($data['created_at']));
+        $repository->setUpdated(new \DateTime($data['last_activity_at']));
+        return $repository;
+    }
+
     /**
      * @param string $repositoryId
      * @return bool
@@ -51,6 +71,17 @@ class Gitlab extends AbstractRepositorySource
         } catch (RuntimeException $e) {
             return false;
         }
+    }
+
+    /**
+     * Tries to initialize a repository object from API data
+     * @param $repositoryId
+     * @return Repository
+     */
+    public function getRepository($repositoryId)
+    {
+        $repositoryInformation = $this->getClient()->projects()->show($repositoryId);
+        return $this->createRepository($repositoryInformation);
     }
 
     /**
@@ -92,6 +123,7 @@ class Gitlab extends AbstractRepositorySource
      * @param string $fileName
      * @param bool $caseSensitive
      * @param string $revision
+     * @param string $path
      * @param bool $recursive
      * @return string[] file paths
      */
@@ -119,33 +151,26 @@ class Gitlab extends AbstractRepositorySource
     }
 
     /**
-     * Tries to initialize a repository object from API data
-     * @param $repositoryId
-     * @return Repository
+     * Return a Repository if it is accessible with the given URL or null,
+     * if not available.
+     * @param string $repositoryUrl
+     * @return Repository|null
      */
-    public function getRepository($repositoryId)
+    public function getRepositoryByUrl($repositoryUrl)
     {
-        $repositoryInformation = $this->getClient()->projects()->show($repositoryId);
-        return $this->createRepository($repositoryInformation);
-    }
-
-    /**
-     * @param array $data Data as returned from the API Client
-     * @return Repository
-     */
-    protected function createRepository(array $data)
-    {
-        $repository = new Repository();
-        $repository->setRepositorySource($this->getIdentifier());
-        $repository->setId($data['id']);
-        $repository->setName($data['name']);
-        $repository->setNamespace($data['namespace']['name']);
-        $repository->setWebUrl($data['web_url']);
-        if (array_key_exists('default_branch', $data) && $data['default_branch'] !== null) {
-            $repository->setDefaultBranch($data['default_branch']);
+        $matches = [];
+        if (preg_match('/(git@|https?:\/\/)(.+?)(:|\/)([^\/]+)\/(.+?)(\.git|$)/', $repositoryUrl, $matches) === false) {
+            return null;
         }
-        $repository->setCreated(new \DateTime($data['created_at']));
-        $repository->setUpdated(new \DateTime($data['last_activity_at']));
-        return $repository;
+        $gitlabHost = $matches[2];
+        if (strpos($this->options['url'], $gitlabHost) === false) {
+            return null;
+        }
+        try {
+            $data = $this->getClient()->projects()->show($matches[4] . '/' . $matches[5]);
+            return $this->createRepository($data);
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 }
