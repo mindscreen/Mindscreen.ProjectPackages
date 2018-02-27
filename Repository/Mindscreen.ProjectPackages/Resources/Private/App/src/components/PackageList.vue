@@ -2,7 +2,9 @@
     <div class="pp-packageList">
         <div class="pp-packageList-filter">
             <div class="pp-packageList-filter__row">
-                <input type="search" v-model="filter" @keyup="updateFilter"
+                <input type="search" v-model="filter"
+                       @keyup="updateFilter"
+                       @change="updateFilter"
                        class="pp-packageList-filter__input"
                        placeholder="vendor/package">
                 <pp-button @click="showFilters = !showFilters"
@@ -79,6 +81,12 @@
     import { PackageVersionInformation } from '../types';
     import { Component, Watch } from 'vue-property-decorator';
 
+    export const Actions = {
+        FilterChanged: 'PackageList_FilterChanged',
+        FilterReset: 'PackageList_FilterReset',
+        PackageChanged: 'PackageList_PackageChanged',
+    };
+
     @Component({
         components: {
             PackageListItem,
@@ -113,7 +121,24 @@
         @Watch('onlyRootDependencies')
         updateFilter(): void {
             const pattern = new RegExp('.*?' + this.filter + '.*?', 'i');
-            EventBus.$emit('PackageList_Filter', {
+            const newQuery = (Object as any).assign({}, this.$route.query);
+            if (this.filter !== '') {
+                newQuery['packages[name]'] = this.filter;
+            } else {
+                delete newQuery['packages[name]'];
+            }
+            if (this.onlyRootDependencies) {
+                newQuery['packages[depth]'] = '0';
+            } else {
+                delete newQuery['packages[depth]'];
+            }
+            if (this.packageManagerFilter !== '' && this.packageManagerFilter !== null) {
+                newQuery['packages[pkgmgr]'] = this.packageManagerFilter;
+            } else {
+                delete newQuery['packages[pkgmgr]'];
+            }
+            this.$router.replace({ query: newQuery });
+            EventBus.$emit(Actions.FilterChanged, {
                 depth: this.onlyRootDependencies ? 0 : null,
                 name: pattern,
                 packageManager: this.packageManagerFilter,
@@ -123,16 +148,36 @@
         reset(): void {
             this.filter = '';
             this.packageManagerFilter = null;
-            EventBus.$emit('PackageList_Reset', null);
+            this.onlyRootDependencies = false;
+            EventBus.$emit(Actions.FilterReset, null);
         }
 
         created(): void {
             fetch('/packages/list?grouped=true')
                 .then(r => r.json())
-                .then(p => this.packages = p);
+                .then(p => this.packages = p)
+                .then(_ => this.updateFilter());
             fetch('/packages/packagemanagers')
                 .then(r => r.json())
                 .then(t => this.packageManagerList = t);
+        }
+
+        mounted(): void {
+            const filterNameFromQuery = this.$route.query['packages[name]'];
+            if (filterNameFromQuery !== undefined) {
+                this.filter = filterNameFromQuery;
+            }
+            const filterDepthFromQuery = this.$route.query['packages[depth]'];
+            if (filterDepthFromQuery !== undefined) {
+                this.onlyRootDependencies = filterDepthFromQuery === '0';
+            }
+            const filterPkgMgrFromQuery = this.$route.query['packages[pkgmgr]'];
+            if (filterPkgMgrFromQuery !== undefined) {
+                this.packageManagerFilter = filterPkgMgrFromQuery;
+            }
+            if (this.filter !== '' || this.filtersUsed) {
+                this.updateFilter();
+            }
         }
     }
 </script>

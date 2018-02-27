@@ -71,6 +71,8 @@
 <script lang="ts">
     import Vue from 'vue';
     import EventBus from './EventBus';
+    import { Actions } from './ProjectList.vue';
+    import { Actions as ProjectActions } from './Project.vue';
     import { Component, Prop } from 'vue-property-decorator';
     import { ProjectInfo, ProjectFilter } from '../types';
     import { getHostIcon } from '../util';
@@ -85,20 +87,20 @@
         project: ProjectInfo;
 
         mounted(): void {
-            EventBus.$on('ProjectList_Filter', (filter: ProjectFilter) => {
+            EventBus.$on(Actions.Filter, (filter: ProjectFilter) => {
                 this.shown = (filter.type === null || this.project.type === filter.type) &&
                     (filter.packageManager === null || this.project.packageManager === filter.packageManager) &&
                     (filter.repositorySource === null || this.project.repository.source === filter.repositorySource) &&
                     filter.name.test(this.project.name);
             });
-            EventBus.$on('Project_Load', (project: ProjectInfo) => {
+            EventBus.$on([ProjectActions.Load, ProjectActions.Loaded], (project: ProjectInfo) => {
                 this.active = project.key === this.project.key;
             });
         }
 
         show(projectId: number): void {
             this.active = true;
-            EventBus.$emit('Project_Load', this.project);
+            EventBus.$emit(ProjectActions.Load, this.project);
         }
 
         getVcsIcon(url: string): string|null {

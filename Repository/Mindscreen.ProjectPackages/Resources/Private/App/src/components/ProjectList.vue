@@ -77,8 +77,13 @@
     import Vue from 'vue';
     import ProjectListItem from './ProjectListItem.vue';
     import EventBus from './EventBus';
-    import { Component, Prop } from 'vue-property-decorator';
+    import { Component, Prop, Watch } from 'vue-property-decorator';
     import { ProjectInfo } from '../types';
+
+    export const Actions = {
+        Filter: 'ProjectList_Filter',
+        ProjectsUpdated: 'ProjectList_ProjectsUpdated',
+    };
 
     @Component({
         components: {
@@ -132,7 +137,29 @@
 
         updateFilter() {
             const pattern = new RegExp('.*?' + this.filter + '.*?', 'i');
-            EventBus.$emit('ProjectList_Filter', {
+            const newQuery = (Object as any).assign({}, this.$route.query);
+            if (this.filter !== '') {
+                newQuery['projects[name]'] = this.filter;
+            } else {
+                delete newQuery['projects[name]'];
+            }
+            if (this.projectType !== '' && this.projectType !== null) {
+                newQuery['projects[type]'] = this.projectType;
+            } else {
+                delete newQuery['projects[type]'];
+            }
+            if (this.packageManager !== '' && this.packageManager !== null) {
+                newQuery['projects[pkgmgr]'] = this.packageManager;
+            } else {
+                delete newQuery['projects[pkgmgr]'];
+            }
+            if (this.repositorySource !== '' && this.repositorySource !== null) {
+                newQuery['projects[src]'] = this.repositorySource;
+            } else {
+                delete newQuery['projects[src]'];
+            }
+            this.$router.replace({ query: newQuery });
+            EventBus.$emit(Actions.Filter, {
                 name: pattern,
                 packageManager: this.packageManager,
                 repositorySource: this.repositorySource,
@@ -148,7 +175,7 @@
             this.updateFilter();
         }
 
-        mounted(): void {
+        created(): void {
             fetch('/projects/projecttypes')
                 .then(r => r.json())
                 .then(t => this.projectTypesList = t);
@@ -158,6 +185,29 @@
             fetch('/projects/repositorysources')
                 .then(r => r.json())
                 .then(t => this.repositorySourceList = t);
+        }
+
+        mounted(): void {
+            const filterNameFromQuery = this.$route.query['projects[name]'];
+            if (filterNameFromQuery !== undefined) {
+                this.filter = filterNameFromQuery;
+            }
+            const filtersourceFromQuery = this.$route.query['projects[src]'];
+            if (filtersourceFromQuery !== undefined) {
+                this.repositorySource = filtersourceFromQuery;
+            }
+            const filterTypeFromQuery = this.$route.query['projects[type]'];
+            if (filterTypeFromQuery !== undefined) {
+                this.projectType = filterTypeFromQuery;
+            }
+            const filterPkgMgrFromQuery = this.$route.query['projects[pkgmgr]'];
+            if (filterPkgMgrFromQuery !== undefined) {
+                this.packageManager = filterPkgMgrFromQuery;
+            }
+            setTimeout(this.updateFilter, 500);
+            EventBus.$on(Actions.ProjectsUpdated, () => {
+                this.updateFilter();
+            });
         }
     }
 </script>

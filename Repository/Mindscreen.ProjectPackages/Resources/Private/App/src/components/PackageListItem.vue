@@ -91,6 +91,7 @@
 <script lang="ts">
     import Vue from 'vue';
     import EventBus from './EventBus';
+    import { Actions as PackageListActions } from './PackageList.vue';
     import { PackageVersionInformation, PackageFilter } from '../types';
     import { Component, Prop } from 'vue-property-decorator';
 
@@ -160,7 +161,7 @@
 
         updatePackages(): void {
             const parameters = this.getFilterParameters();
-            EventBus.$emit('PackageList_Changed', {
+            EventBus.$emit(PackageListActions.PackageChanged, {
                 name: this.name,
                 parameters: parameters,
             });
@@ -175,13 +176,13 @@
         }
 
         mounted() {
-            EventBus.$on('PackageList_Filter', (filter: PackageFilter) => {
+            EventBus.$on(PackageListActions.FilterChanged, (filter: PackageFilter) => {
                 this.shown =
                     (filter.packageManager === null || filter.packageManager === this.packageManager) &&
                     (filter.depth === null || this.depths.indexOf(filter.depth) >= 0) &&
                     filter.name.test(this.name);
             });
-            EventBus.$on('PackageList_Reset', () => {
+            EventBus.$on(PackageListActions.FilterReset, () => {
                 this.selected = false;
                 this.shown = true;
                 this.selectedVersions = [];

@@ -137,4 +137,18 @@ class ProjectController extends ActionController
         $this->view->assign('value', $queryResult);
     }
 
+    /**
+     * @param string $projectKey
+     */
+    public function showAction($projectKey)
+    {
+        $queryResult = $this->projectRepository->findOneByKey($projectKey);
+        if ($queryResult instanceof Project) {
+            $value = $queryResult->toArray();
+        } else {
+            $value = null;
+        }
+        $this->view->assign('value', $value);
+    }
+
 }

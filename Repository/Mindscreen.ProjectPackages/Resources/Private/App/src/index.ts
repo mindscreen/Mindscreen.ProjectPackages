@@ -1,6 +1,7 @@
 import Vue from 'vue';
-import PackageList from './components/PackageList.vue';
-import ProjectList from './components/ProjectList.vue';
+import VueRouter from 'vue-router';
+import PackageList, { Actions as PackageListActions } from './components/PackageList.vue';
+import ProjectList, { Actions as ProjectListActions } from './components/ProjectList.vue';
 import Project from './components/Project.vue';
 import SiteHeader from './components/SiteHeader.vue';
 import Badge from './components/Badge.vue';
@@ -8,8 +9,12 @@ import Button from './components/Button.vue';
 import Checkbox from './components/Checkbox.vue';
 import EventBus from './components/EventBus';
 import { ProjectInfo } from './types';
-import { Component } from 'vue-property-decorator';
+import { Component, Watch } from 'vue-property-decorator';
 import vSelect from 'vue-select';
+
+Vue.use(VueRouter);
+
+const router = new VueRouter();
 
 Vue.component('pp-badge', Badge);
 Vue.component('pp-button', Button);
@@ -23,6 +28,7 @@ Vue.component('v-select', vSelect);
     ProjectList,
     SiteHeader,
   },
+  router: router,
   template: `
     <div>
         <site-header />
@@ -49,8 +55,12 @@ class App extends Vue {
         return p;
       });
   }
+  @Watch('projects')
+  onProjectsChanged(): void {
+    EventBus.$emit(ProjectListActions.ProjectsUpdated);
+  }
   mounted() {
-    EventBus.$on('PackageList_Changed', (filterArgument: { name: string, parameters: string[] }) => {
+    EventBus.$on(PackageListActions.PackageChanged, (filterArgument: { name: string, parameters: string[] }) => {
       if (filterArgument.parameters.length === 0) {
         if (this.packageFilter[filterArgument.name] !== undefined) {
           delete this.packageFilter[filterArgument.name];
@@ -60,7 +70,7 @@ class App extends Vue {
       }
       this.loadFilteredPackageList();
     });
-    EventBus.$on('PackageList_Reset', () => {
+    EventBus.$on(PackageListActions.FilterReset, () => {
       this.projects = this.allProjects;
       this.packageFilter = {};
     });
@@ -76,6 +86,7 @@ class App extends Vue {
         .then(r => r.json())
         .then(p => {
           this.projects = p;
+          EventBus.$emit(ProjectListActions.ProjectsUpdated);
           return p;
         });
     }
