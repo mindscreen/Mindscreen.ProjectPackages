@@ -54,6 +54,8 @@
                 height: $size;
                 @include input;
                 padding: 0;
+                top: 0;
+                left: 0;
             }
             &:hover:before {
                 background: $colorBgHover;
