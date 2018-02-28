@@ -34,6 +34,7 @@
             <PackageListItem v-for="(packageVersions, index) in packages"
                              :key="index"
                              :name="packageVersions[0].name"
+                             :initialSelection="packageFilter[packageVersions[0].name]"
                              :packageVersions="packageVersions"/>
         </div>
     </div>
@@ -79,12 +80,14 @@
     import PackageListItem from './PackageListItem.vue';
     import EventBus from './EventBus';
     import { PackageVersionInformation } from '../types';
-    import { Component, Watch } from 'vue-property-decorator';
+    import { Component, Watch, Prop } from 'vue-property-decorator';
+    import { buildQueryObject } from '../util';
 
     export const Actions = {
         FilterChanged: 'PackageList_FilterChanged',
         FilterReset: 'PackageList_FilterReset',
         PackageChanged: 'PackageList_PackageChanged',
+        SelectVersion: 'PackageList_SelectVersion',
     };
 
     @Component({
@@ -98,6 +101,9 @@
         packageManagerFilter: string|null = null;
 
         packages: PackageVersionInformation[][] = [];
+
+        @Prop()
+        packageFilter: {[k: string]: string[]};
 
         showFilters: boolean = false;
 
@@ -130,22 +136,23 @@
         }
 
         updateQueryString(): void {
-            const newQuery = (Object as any).assign({}, this.$route.query);
-            if (this.filter !== '') {
-                newQuery['packages[name]'] = this.filter;
-            } else {
-                delete newQuery['packages[name]'];
-            }
-            if (this.onlyRootDependencies) {
-                newQuery['packages[depth]'] = '0';
-            } else {
-                delete newQuery['packages[depth]'];
-            }
-            if (this.packageManagerFilter !== '' && this.packageManagerFilter !== null) {
-                newQuery['packages[pkgmgr]'] = this.packageManagerFilter;
-            } else {
-                delete newQuery['packages[pkgmgr]'];
-            }
+            const newQuery = buildQueryObject(this.$route.query, [
+                {
+                    condition: this.filter !== '',
+                    key: 'packages[name]',
+                    value: this.filter,
+                },
+                {
+                    condition: this.onlyRootDependencies,
+                    key: 'packages[depth]',
+                    value: '0',
+                },
+                {
+                    condition: this.packageManagerFilter !== '',
+                    key: 'packages[pkgmgr]',
+                    value: this.packageManagerFilter,
+                },
+            ]);
             this.$router.replace({ query: newQuery });
         }
 
@@ -183,6 +190,16 @@
             if (this.filter !== '' || this.filtersUsed) {
                 this.updateFilter();
             }
+            Object.keys(this.packageFilter).forEach(pkgName => {
+                this.packageFilter[pkgName].forEach(pkgVersion => {
+                    setTimeout(() => {
+                        EventBus.$emit(Actions.SelectVersion, {
+                            name: pkgName,
+                            version: pkgVersion,
+                        });
+                    }, 500);
+                });
+            });
         }
     }
 </script>

@@ -9,6 +9,7 @@ import Button from './components/Button.vue';
 import Checkbox from './components/Checkbox.vue';
 import EventBus from './components/EventBus';
 import { ProjectInfo } from './types';
+import { buildQueryObject } from './util';
 import { Component, Watch } from 'vue-property-decorator';
 import vSelect from 'vue-select';
 
@@ -34,7 +35,7 @@ Vue.component('v-select', vSelect);
         <site-header />
         <div class="pp-app">
             <div class="pp-row">
-                <package-list />
+                <package-list :packageFilter="packageFilter" />
                 <project-list :projects="projects" />
                 <project />
             </div>
@@ -46,6 +47,7 @@ class App extends Vue {
   allProjects: ProjectInfo[] = [];
   projects: ProjectInfo[] = [];
   packageFilter: {[p: string]: string[]} = {};
+
   created(): void {
     fetch('/projects/list')
       .then(r => r.json())
@@ -54,11 +56,25 @@ class App extends Vue {
         this.projects = p;
         return p;
       });
+    const packagesFromUrl = this.$route.query['packages[packages]'];
+    if (packagesFromUrl !== undefined) {
+      packagesFromUrl
+        .split(';')
+        .map(p => p.split(':'))
+        .map(([n, v]) => {
+          if (this.packageFilter[n] === undefined) {
+            this.packageFilter[n] = [];
+          }
+          this.packageFilter[n].push(v);
+        });
+    }
   }
+
   @Watch('projects')
   onProjectsChanged(): void {
     EventBus.$emit(ProjectListActions.ProjectsUpdated);
   }
+
   mounted() {
     EventBus.$on(PackageListActions.PackageChanged, (filterArgument: { name: string, parameters: string[] }) => {
       if (filterArgument.parameters.length === 0) {
@@ -75,12 +91,23 @@ class App extends Vue {
       this.packageFilter = {};
     });
   }
+
   loadFilteredPackageList() {
     if (Object.keys(this.packageFilter).length === 0) {
       this.projects = this.allProjects;
+      this.$router.replace({ query: buildQueryObject(this.$route.query, [{
+        condition: false,
+        key: 'packages[packages]',
+        value: null,
+      }])});
     } else {
       const initial: string[] = [];
       const flattened = Object.keys(this.packageFilter).reduce((p, c) => p.concat(this.packageFilter[c]), initial);
+      this.$router.replace({ query: buildQueryObject(this.$route.query, [{
+        condition: true,
+        key: 'packages[packages]',
+        value: flattened.join(';'),
+      }])});
       const queryString = flattened.map(s => `packages[]=${s}`).join('&');
       fetch('/packages/projects?' + queryString)
         .then(r => r.json())

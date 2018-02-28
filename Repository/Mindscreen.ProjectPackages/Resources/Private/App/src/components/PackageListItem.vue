@@ -95,6 +95,8 @@
     import { PackageVersionInformation, PackageFilter } from '../types';
     import { Component, Prop } from 'vue-property-decorator';
 
+    const AnyVersion = 'ANY';
+
     @Component
     export default class PackageListItem extends Vue {
 
@@ -111,6 +113,9 @@
 
         @Prop()
         packageVersions: PackageVersionInformation[];
+
+        @Prop()
+        initialSelection?: string[];
 
         constructor() {
             super();
@@ -154,7 +159,7 @@
                 return [];
             }
             if (this.selectedVersions.length === this.packageVersions.length) {
-                return [this.name + ':ANY'];
+                return [this.name + ':' + AnyVersion];
             }
             return this.selectedVersions.map((versionName: string) => this.name + ':' + versionName);
         }
@@ -187,6 +192,18 @@
                 this.shown = true;
                 this.selectedVersions = [];
             });
+            if (this.initialSelection !== undefined) {
+                if (this.initialSelection[0] === AnyVersion) {
+                    this.selected = true;
+                    this.toggleSelected();
+                } else {
+                    this.selectedVersions = this.initialSelection;
+                    this.selected = this.selectedVersions.length === this.packageVersions.length;
+                    if (!this.selected) {
+                        this.collapsed = false;
+                    }
+                }
+            }
         }
     }
 </script>

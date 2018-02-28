@@ -79,6 +79,7 @@
     import EventBus from './EventBus';
     import { Component, Prop, Watch } from 'vue-property-decorator';
     import { ProjectInfo } from '../types';
+    import { buildQueryObject } from '../util';
 
     export const Actions = {
         Filter: 'ProjectList_Filter',
@@ -137,27 +138,28 @@
 
         updateFilter() {
             const pattern = new RegExp('.*?' + this.filter + '.*?', 'i');
-            const newQuery = (Object as any).assign({}, this.$route.query);
-            if (this.filter !== '') {
-                newQuery['projects[name]'] = this.filter;
-            } else {
-                delete newQuery['projects[name]'];
-            }
-            if (this.projectType !== '' && this.projectType !== null) {
-                newQuery['projects[type]'] = this.projectType;
-            } else {
-                delete newQuery['projects[type]'];
-            }
-            if (this.packageManager !== '' && this.packageManager !== null) {
-                newQuery['projects[pkgmgr]'] = this.packageManager;
-            } else {
-                delete newQuery['projects[pkgmgr]'];
-            }
-            if (this.repositorySource !== '' && this.repositorySource !== null) {
-                newQuery['projects[src]'] = this.repositorySource;
-            } else {
-                delete newQuery['projects[src]'];
-            }
+            const newQuery = buildQueryObject(this.$route.query, [
+                {
+                    condition: this.filter !== '',
+                    key: 'projects[name]',
+                    value: this.filter,
+                },
+                {
+                    condition: this.projectType !== '',
+                    key: 'projects[type]',
+                    value: this.projectType,
+                },
+                {
+                    condition: this.packageManager !== '',
+                    key: 'projects[pkgmgr]',
+                    value: this.packageManager,
+                },
+                {
+                    condition: this.repositorySource !== '',
+                    key: 'projects[src]',
+                    value: this.repositorySource,
+                },
+            ]);
             this.$router.replace({ query: newQuery });
             EventBus.$emit(Actions.Filter, {
                 name: pattern,
