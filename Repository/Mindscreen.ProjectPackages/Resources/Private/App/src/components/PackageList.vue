@@ -2,7 +2,9 @@
     <div class="pp-packageList">
         <div class="pp-packageList-filter">
             <div class="pp-packageList-filter__row">
-                <input type="search" v-model="filter" @keyup="updateFilter"
+                <input type="search" v-model="filter"
+                       @keyup="updateFilter"
+                       @change="updateFilter"
                        class="pp-packageList-filter__input"
                        placeholder="vendor/package">
                 <pp-button @click="showFilters = !showFilters"
@@ -32,6 +34,7 @@
             <PackageListItem v-for="(packageVersions, index) in packages"
                              :key="index"
                              :name="packageVersions[0].name"
+                             :initialSelection="packageFilter[packageVersions[0].name]"
                              :packageVersions="packageVersions"/>
         </div>
     </div>
@@ -77,7 +80,15 @@
     import PackageListItem from './PackageListItem.vue';
     import EventBus from './EventBus';
     import { PackageVersionInformation } from '../types';
-    import { Component, Watch } from 'vue-property-decorator';
+    import { Component, Watch, Prop } from 'vue-property-decorator';
+    import { buildQueryObject } from '../util';
+
+    export const Actions = {
+        FilterChanged: 'PackageList_FilterChanged',
+        FilterReset: 'PackageList_FilterReset',
+        PackageChanged: 'PackageList_PackageChanged',
+        SelectVersion: 'PackageList_SelectVersion',
+    };
 
     @Component({
         components: {
@@ -90,6 +101,9 @@
         packageManagerFilter: string|null = null;
 
         packages: PackageVersionInformation[][] = [];
+
+        @Prop()
+        packageFilter: {[k: string]: string[]};
 
         showFilters: boolean = false;
 
@@ -113,26 +127,79 @@
         @Watch('onlyRootDependencies')
         updateFilter(): void {
             const pattern = new RegExp('.*?' + this.filter + '.*?', 'i');
-            EventBus.$emit('PackageList_Filter', {
+            this.updateQueryString();
+            EventBus.$emit(Actions.FilterChanged, {
                 depth: this.onlyRootDependencies ? 0 : null,
                 name: pattern,
                 packageManager: this.packageManagerFilter,
             });
         }
 
+        updateQueryString(): void {
+            const newQuery = buildQueryObject(this.$route.query, [
+                {
+                    condition: this.filter !== '',
+                    key: 'packages[name]',
+                    value: this.filter,
+                },
+                {
+                    condition: this.onlyRootDependencies,
+                    key: 'packages[depth]',
+                    value: '0',
+                },
+                {
+                    condition: this.packageManagerFilter !== '',
+                    key: 'packages[pkgmgr]',
+                    value: this.packageManagerFilter,
+                },
+            ]);
+            this.$router.replace({ query: newQuery });
+        }
+
         reset(): void {
             this.filter = '';
             this.packageManagerFilter = null;
-            EventBus.$emit('PackageList_Reset', null);
+            this.onlyRootDependencies = false;
+            this.updateQueryString();
+            EventBus.$emit(Actions.FilterReset, null);
         }
 
         created(): void {
             fetch('/packages/list?grouped=true')
                 .then(r => r.json())
-                .then(p => this.packages = p);
+                .then(p => this.packages = p)
+                .then(_ => this.updateFilter());
             fetch('/packages/packagemanagers')
                 .then(r => r.json())
                 .then(t => this.packageManagerList = t);
+        }
+
+        mounted(): void {
+            const filterNameFromQuery = this.$route.query['packages[name]'];
+            if (filterNameFromQuery !== undefined) {
+                this.filter = filterNameFromQuery;
+            }
+            const filterDepthFromQuery = this.$route.query['packages[depth]'];
+            if (filterDepthFromQuery !== undefined) {
+                this.onlyRootDependencies = filterDepthFromQuery === '0';
+            }
+            const filterPkgMgrFromQuery = this.$route.query['packages[pkgmgr]'];
+            if (filterPkgMgrFromQuery !== undefined) {
+                this.packageManagerFilter = filterPkgMgrFromQuery;
+            }
+            if (this.filter !== '' || this.filtersUsed) {
+                this.updateFilter();
+            }
+            Object.keys(this.packageFilter).forEach(pkgName => {
+                this.packageFilter[pkgName].forEach(pkgVersion => {
+                    setTimeout(() => {
+                        EventBus.$emit(Actions.SelectVersion, {
+                            name: pkgName,
+                            version: pkgVersion,
+                        });
+                    }, 500);
+                });
+            });
         }
     }
 </script>

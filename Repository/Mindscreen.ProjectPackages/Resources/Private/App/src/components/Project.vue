@@ -106,6 +106,11 @@ import { Message, ProjectInfo } from '../types';
 import { views } from './project-views/index';
 import { getHostIcon } from '../util';
 
+export const Actions = {
+    Load: 'Project_Load',
+    Loaded: 'Project_Loaded',
+};
+
 @Component
 export default class Project extends Vue {
 
@@ -124,17 +129,29 @@ export default class Project extends Vue {
         return getHostIcon(host);
     }
 
-    mounted(): void {
-        EventBus.$on('Project_Load', (project: ProjectInfo) => {
-            this.project = project;
-            this.name = project.name;
-            this.url = project.repository.url;
-            this.packageManager = project.packageManager;
-            this.description = project.description;
+    loadProject(project: ProjectInfo) {
+        this.project = project;
+        this.name = project.name;
+        this.url = project.repository.url;
+        this.packageManager = project.packageManager;
+        this.description = project.description;
+        EventBus.$emit(Actions.Loaded, project);
+        fetch(`/projects/messages/${project.key}`)
+            .then(r => r.json())
+            .then(j => this.messages = j);
+    }
 
-            fetch(`/projects/messages/${project.key}`)
+    mounted(): void {
+        const projectKeyFromQuery = this.$route.query['project[key]'];
+        if (projectKeyFromQuery !== undefined) {
+            fetch(`projects/show/${projectKeyFromQuery}`)
                 .then(r => r.json())
-                .then(j => this.messages = j);
+                .then(p => this.loadProject(p as ProjectInfo));
+        }
+        EventBus.$on(Actions.Load, (project: ProjectInfo) => {
+            this.loadProject(project);
+            this.$router.push(
+                { query: (Object as any).assign({}, this.$route.query, { 'project[key]': this.project.key }) });
         });
     }
 }

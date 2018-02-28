@@ -91,8 +91,11 @@
 <script lang="ts">
     import Vue from 'vue';
     import EventBus from './EventBus';
+    import { Actions as PackageListActions } from './PackageList.vue';
     import { PackageVersionInformation, PackageFilter } from '../types';
     import { Component, Prop } from 'vue-property-decorator';
+
+    const AnyVersion = 'ANY';
 
     @Component
     export default class PackageListItem extends Vue {
@@ -110,6 +113,9 @@
 
         @Prop()
         packageVersions: PackageVersionInformation[];
+
+        @Prop()
+        initialSelection?: string[];
 
         constructor() {
             super();
@@ -153,14 +159,14 @@
                 return [];
             }
             if (this.selectedVersions.length === this.packageVersions.length) {
-                return [this.name + ':ANY'];
+                return [this.name + ':' + AnyVersion];
             }
             return this.selectedVersions.map((versionName: string) => this.name + ':' + versionName);
         }
 
         updatePackages(): void {
             const parameters = this.getFilterParameters();
-            EventBus.$emit('PackageList_Changed', {
+            EventBus.$emit(PackageListActions.PackageChanged, {
                 name: this.name,
                 parameters: parameters,
             });
@@ -175,17 +181,29 @@
         }
 
         mounted() {
-            EventBus.$on('PackageList_Filter', (filter: PackageFilter) => {
+            EventBus.$on(PackageListActions.FilterChanged, (filter: PackageFilter) => {
                 this.shown =
                     (filter.packageManager === null || filter.packageManager === this.packageManager) &&
                     (filter.depth === null || this.depths.indexOf(filter.depth) >= 0) &&
                     filter.name.test(this.name);
             });
-            EventBus.$on('PackageList_Reset', () => {
+            EventBus.$on(PackageListActions.FilterReset, () => {
                 this.selected = false;
                 this.shown = true;
                 this.selectedVersions = [];
             });
+            if (this.initialSelection !== undefined) {
+                if (this.initialSelection[0] === AnyVersion) {
+                    this.selected = true;
+                    this.toggleSelected();
+                } else {
+                    this.selectedVersions = this.initialSelection;
+                    this.selected = this.selectedVersions.length === this.packageVersions.length;
+                    if (!this.selected) {
+                        this.collapsed = false;
+                    }
+                }
+            }
         }
     }
 </script>

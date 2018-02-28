@@ -1,3 +1,5 @@
+import { Dictionary } from 'vue-router/types/router';
+
 function getHostIcon(url: string): string|null {
     const host = url.match(/:\/\/([^/]+)/);
     if (host !== null) {
@@ -14,7 +16,26 @@ function uuidv4() {
   });
 }
 
+type QueryArgumentOption = {
+  key: string,
+  value: string|null,
+  condition: boolean,
+};
+
+function buildQueryObject(oldQuery: Dictionary<string>, args: QueryArgumentOption[]) {
+  const newQuery = (Object as any).assign({}, oldQuery);
+  args.forEach(arg => {
+    if (arg.value !== null && arg.condition) {
+      newQuery[arg.key] = arg.value;
+    } else {
+      delete newQuery[arg.key];
+    }
+  });
+  return newQuery;
+}
+
 export {
     getHostIcon,
     uuidv4,
+    buildQueryObject,
 };
