@@ -4,14 +4,21 @@
   "description": "",
   "main": "main.ts",
   "scripts": {
-    "build": "webpack",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "NODE_ENV=\"production\" webpack",
+    "build:dev": "webpack --watch",
+    "lint": "node_modules/.bin/wotan",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "precommit": "npm run lint && npm run build && git add ./Repository/Mindscreen.ProjectPackages/Resources/Public/"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@fimbul/valtyr": "^0.3.0",
+    "@fimbul/ve": "^0.2.0",
+    "@fimbul/wotan": "^0.3.0",
     "css-loader": "^0.28.8",
     "node-sass": "^4.7.2",
+    "pre-commit": "^1.2.2",
     "sass-loader": "^6.0.6",
     "ts-loader": "^3.2.0",
     "tslint": "^5.9.1",
@@ -27,5 +34,8 @@
   },
   "dependencies": {
     "vue-select": "^2.4.0"
+  },
+  "pre-commit": {
+    "run": [ "precommit" ]
   }
 }
