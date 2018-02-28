@@ -121,6 +121,15 @@
         @Watch('onlyRootDependencies')
         updateFilter(): void {
             const pattern = new RegExp('.*?' + this.filter + '.*?', 'i');
+            this.updateQueryString();
+            EventBus.$emit(Actions.FilterChanged, {
+                depth: this.onlyRootDependencies ? 0 : null,
+                name: pattern,
+                packageManager: this.packageManagerFilter,
+            });
+        }
+
+        updateQueryString(): void {
             const newQuery = (Object as any).assign({}, this.$route.query);
             if (this.filter !== '') {
                 newQuery['packages[name]'] = this.filter;
@@ -138,17 +147,13 @@
                 delete newQuery['packages[pkgmgr]'];
             }
             this.$router.replace({ query: newQuery });
-            EventBus.$emit(Actions.FilterChanged, {
-                depth: this.onlyRootDependencies ? 0 : null,
-                name: pattern,
-                packageManager: this.packageManagerFilter,
-            });
         }
 
         reset(): void {
             this.filter = '';
             this.packageManagerFilter = null;
             this.onlyRootDependencies = false;
+            this.updateQueryString();
             EventBus.$emit(Actions.FilterReset, null);
         }
 
