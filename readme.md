@@ -4,17 +4,19 @@ Goal of this project is to offer an overview of packages used in your various pr
 Addtionally projects can be searched by filtering packages e.g. to find all your projects you have to update as some package has received an update or got deprecated.
 
 ## Requirements
-This project is a [Flow](https://flow.neos.io) application, so [it's requirements](http://flowframework.readthedocs.io/en/stable/Quickstart/index.html#installing-flow) apply:
+This project requires a [Flow](https://flow.neos.io) application, so [it's requirements](http://flowframework.readthedocs.io/en/stable/Quickstart/index.html#installing-flow) apply:
 * a webserver
 * PHP 7.1
 * a [Doctrine DBAL](http://www.doctrine-project.org/projects/dbal.html)-supported database such as MySql
 * command-line access
 
 ## Installation
-1. Setup your database
-2. Store your credentials in your [Settings.yaml](http://flowframework.readthedocs.io/en/stable/TheDefinitiveGuide/PartII/Configuration.html#database-setup)
-3. Configure your repository-sources
-4. Create tables: `./flow doctrine:migrate`
+1. [Install Flow](http://flowframework.readthedocs.io/en/stable/TheDefinitiveGuide/PartII/Installation.html)
+2. Require this project
+    a. [Configure](https://getcomposer.org/doc/05-repositories.md#loading-a-package-from-a-vcs-repository) the `composer.json` to include this repository when requiring `mindscreen/projectpackages`
+    b. Clone this repository into `Packages/Application` of your Flow application
+3. Store your credentials in your [Settings.yaml](http://flowframework.readthedocs.io/en/stable/TheDefinitiveGuide/PartII/Configuration.html#database-setup)
+4. Configure your repository-sources
 5. [Load data](#cli)
 
 ## Configuration

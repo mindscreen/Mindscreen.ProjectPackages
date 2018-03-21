@@ -1,37 +1,21 @@
 {
-    "name": "mindscreen/project-packages-distribution",
-    "description": "Mindscreen ProjectPackages Distribution",
-    "license": "MIT",
-    "config": {
-        "vendor-dir": "Packages/Libraries",
-        "bin-dir": "bin"
-    },
-    "repositories": {
-      "local-packages": {
-        "type": "path",
-        "url": "./Repository/*/"
-      }
-    },
+    "description": "",
+    "type": "neos-package",
+    "name": "mindscreen/projectpackages",
     "require": {
-        "neos/flow": "~4.3.0",
-        "mindscreen/projectpackages": "dev-master"
+        "neos/flow": "*",
+        "m4tthumphrey/php-gitlab-api": "9.x",
+        "php-http/guzzle6-adapter": "*",
+        "mindscreen/yarnlock": "^1.0.0"
     },
-    "require-dev": {
-        "neos/buildessentials": "dev-master",
-        "neos/behat": "dev-master",
-        "phpunit/phpunit": "~6.0.0",
-        "mikey179/vfsstream": "~1.6"
+    "autoload": {
+        "psr-4": {
+            "Mindscreen\\ProjectPackages\\": "Classes/"
+        }
     },
-    "replace": {
-        "typo3/flow-base-distribution": "self.version"
-    },
-    "suggest": {
-        "ext-pdo_sqlite": "For running functional tests out-of-the-box this is required"
-    },
-    "scripts": {
-        "post-update-cmd": "Neos\\Flow\\Composer\\InstallerScripts::postUpdateAndInstall",
-        "post-install-cmd": "Neos\\Flow\\Composer\\InstallerScripts::postUpdateAndInstall",
-        "post-package-update": "Neos\\Flow\\Composer\\InstallerScripts::postPackageUpdateAndInstall",
-        "post-package-install": "Neos\\Flow\\Composer\\InstallerScripts::postPackageUpdateAndInstall"
+    "extra": {
+        "neos": {
+            "package-key": "Mindscreen.ProjectPackages"
+        }
     }
 }
