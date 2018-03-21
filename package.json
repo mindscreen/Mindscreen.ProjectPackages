@@ -8,7 +8,7 @@
     "build:dev": "webpack --watch",
     "lint": "node_modules/.bin/wotan",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "precommit": "npm run lint && npm run build && git add ./Repository/Mindscreen.ProjectPackages/Resources/Public/"
+    "precommit": "npm run lint"
   },
   "author": "",
   "license": "ISC",
@@ -36,6 +36,8 @@
     "vue-select": "^2.4.0"
   },
   "pre-commit": {
-    "run": [ "precommit" ]
+    "run": [
+      "precommit"
+    ]
   }
 }
