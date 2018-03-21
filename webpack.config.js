@@ -2,9 +2,9 @@ var path = require('path');
 var webpack = require('webpack');
 
 module.exports = {
-    entry: './Repository/Mindscreen.ProjectPackages/Resources/Private/App/src/index.ts',
+    entry: './Resources/Private/App/src/index.ts',
     output: {
-        path: path.resolve(__dirname, './Repository/Mindscreen.ProjectPackages/Resources/Public/Build'),
+        path: path.resolve(__dirname, './Resources/Public/Build'),
         publicPath:'/',
         filename: 'build.js'
     },
