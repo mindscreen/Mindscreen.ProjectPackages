@@ -16,7 +16,7 @@
     "@fimbul/valtyr": "^0.3.0",
     "@fimbul/ve": "^0.2.0",
     "@fimbul/wotan": "^0.3.0",
-    "css-loader": "^0.28.11",
+    "css-loader": "^3.0.0",
     "node-sass": "^4.11.0",
     "pre-commit": "^1.2.2",
     "sass-loader": "^6.0.7",
