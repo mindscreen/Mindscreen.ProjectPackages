@@ -84,7 +84,7 @@
 
         active: boolean = false;
         @Prop()
-        project: ProjectInfo;
+        project!: ProjectInfo;
 
         mounted(): void {
             EventBus.$on(Actions.Filter, (filter: ProjectFilter) => {

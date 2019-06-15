@@ -84,15 +84,15 @@ import { uuidv4 } from '../util';
 @Component
 export default class Checkbox extends Vue {
     @Prop()
-    title: string;
+    title!: string;
     @Prop()
-    label: string;
+    label!: string;
     @Prop({default: ''})
-    className: string;
+    className!: string;
     @Prop({default: false})
-    disabled: boolean;
+    disabled!: boolean;
     @Prop()
-    value: boolean;
+    value!: boolean;
 
     onChange(e: Event) {
         this.$emit('change', (e.target as HTMLInputElement).checked);

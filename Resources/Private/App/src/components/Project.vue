@@ -119,7 +119,7 @@ export default class Project extends Vue {
     url: string = '';
     packageManager: string = '';
     messages: Message[] = [];
-    project: ProjectInfo;
+    project!: ProjectInfo;
 
     get projectView(): any {
         return views[this.packageManager];
@@ -150,8 +150,10 @@ export default class Project extends Vue {
         }
         EventBus.$on(Actions.Load, (project: ProjectInfo) => {
             this.loadProject(project);
+            if (this.project !== undefined) {
             this.$router.push(
                 { query: (Object as any).assign({}, this.$route.query, { 'project[key]': this.project.key }) });
+            }
         });
     }
 }

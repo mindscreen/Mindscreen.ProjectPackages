@@ -9,16 +9,16 @@
                 <img :alt="packageManager" :title="packageManager" :src="`/_Resources/Static/Packages/Mindscreen.ProjectPackages/Build/assets/${packageManager}.png`">
                 {{name}}
             </label>
-            <div v-if="!collapsed" v-for="(packageVersion, index) in packageVersions"
-                 :key="packageVersion.version + '_' + index"
-                 class="pp-packageList__item-versionList">
-                <div class="pp-packageList__item__version">
-                    <input type="checkbox"
-                           :checked="isSelected(packageVersion.version)"
-                           @change="toggleVersion(packageVersion.version)"
-                           :id="versionId(packageVersion.version + '_' + index)">
-                    <label :for="versionId(packageVersion.version + '_' + index)">{{packageVersion.version}}</label>
-                    <span class="pp-packageList__item__version--badge">{{packageVersion.usages}}</span>
+            <div v-if="!collapsed" class="pp-packageList__item-versionList">
+                <div v-for="(packageVersion, index) in packageVersions" :key="packageVersion.version + '_' + index">
+                    <div class="pp-packageList__item__version">
+                        <input type="checkbox"
+                            :checked="isSelected(packageVersion.version)"
+                            @change="toggleVersion(packageVersion.version)"
+                            :id="versionId(packageVersion.version + '_' + index)">
+                        <label :for="versionId(packageVersion.version + '_' + index)">{{packageVersion.version}}</label>
+                        <span class="pp-packageList__item__version--badge">{{packageVersion.usages}}</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -109,10 +109,10 @@
         shown: boolean = true;
 
         @Prop()
-        name: string;
+        name: string = '';
 
         @Prop()
-        packageVersions: PackageVersionInformation[];
+        packageVersions: PackageVersionInformation[] = [];
 
         @Prop()
         initialSelection?: string[];

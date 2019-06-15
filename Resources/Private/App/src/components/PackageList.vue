@@ -103,7 +103,7 @@
         packages: PackageVersionInformation[][] = [];
 
         @Prop()
-        packageFilter: {[k: string]: string[]};
+        packageFilter: {[k: string]: string[]} = {};
 
         showFilters: boolean = false;
 
@@ -175,7 +175,7 @@
         }
 
         mounted(): void {
-            const filterNameFromQuery = this.$route.query['packages[name]'];
+            const filterNameFromQuery = this.$route.query['packages[name]'].toString();
             if (filterNameFromQuery !== undefined) {
                 this.filter = filterNameFromQuery;
             }
@@ -183,7 +183,7 @@
             if (filterDepthFromQuery !== undefined) {
                 this.onlyRootDependencies = filterDepthFromQuery === '0';
             }
-            const filterPkgMgrFromQuery = this.$route.query['packages[pkgmgr]'];
+            const filterPkgMgrFromQuery = this.$route.query['packages[pkgmgr]'].toString();
             if (filterPkgMgrFromQuery !== undefined) {
                 this.packageManagerFilter = filterPkgMgrFromQuery;
             }

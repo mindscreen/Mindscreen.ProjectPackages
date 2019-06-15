@@ -91,7 +91,7 @@ export default class DependencyTree extends Vue {
     treeFilter: string = '';
     filterTimeout: number|null = null;
     @Prop()
-    packages: PackageInformation[];
+    packages: PackageInformation[] = [];
 
     get filteredPackages() {
         const packages = this.packages.slice();

@@ -22,7 +22,7 @@ type QueryArgumentOption = {
   condition: boolean,
 };
 
-function buildQueryObject(oldQuery: Dictionary<string>, args: QueryArgumentOption[]) {
+function buildQueryObject(oldQuery: Dictionary<string | string[]>, args: QueryArgumentOption[]) {
   const newQuery = (Object as any).assign({}, oldQuery);
   args.forEach(arg => {
     if (arg.value !== null && arg.condition) {

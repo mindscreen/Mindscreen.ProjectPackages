@@ -55,7 +55,7 @@ import DependencyTree from '../DependencyTree.vue';
 export default class ComposerProject extends Vue {
 
     @Prop()
-    project: ProjectInfo;
+    project!: ProjectInfo;
 
     packages: PackageInformation[] = [];
 

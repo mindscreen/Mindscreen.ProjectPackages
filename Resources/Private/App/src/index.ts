@@ -56,10 +56,12 @@ class App extends Vue {
         this.projects = p;
         return p;
       });
-    const packagesFromUrl = this.$route.query['packages[packages]'];
+    let packagesFromUrl = this.$route.query['packages[packages]'];
     if (packagesFromUrl !== undefined) {
+      if (!Array.isArray(packagesFromUrl)) {
+        packagesFromUrl = packagesFromUrl.split(';');
+      }
       packagesFromUrl
-        .split(';')
         .map(p => p.split(':'))
         .map(([n, v]) => {
           if (this.packageFilter[n] === undefined) {

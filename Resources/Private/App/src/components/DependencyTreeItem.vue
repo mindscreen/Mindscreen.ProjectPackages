@@ -100,11 +100,11 @@ export default class DependencyTreeItem extends Vue {
     isExpanded: boolean = false;
     show: boolean = true;
     @Prop()
-    depth: number;
+    depth!: number;
     @Prop()
-    pkg: PackageInformation;
+    pkg!: PackageInformation;
     @Prop()
-    filterActive: boolean;
+    filterActive!: boolean;
 
     get expanded(): boolean {
         return this.filterActive || this.isExpanded;

@@ -98,7 +98,7 @@
         packageManager: string|null = null;
         repositorySource: string|null = null;
         @Prop()
-        projects: ProjectInfo[];
+        projects: ProjectInfo[] = [];
         private projectTypesList: string[] = [];
         private packageManagerList: string[] = [];
         private repositorySourceList: string[] = [];
@@ -190,19 +190,19 @@
         }
 
         mounted(): void {
-            const filterNameFromQuery = this.$route.query['projects[name]'];
+            const filterNameFromQuery = this.$route.query['projects[name]'].toString();
             if (filterNameFromQuery !== undefined) {
                 this.filter = filterNameFromQuery;
             }
-            const filtersourceFromQuery = this.$route.query['projects[src]'];
+            const filtersourceFromQuery = this.$route.query['projects[src]'].toString();
             if (filtersourceFromQuery !== undefined) {
                 this.repositorySource = filtersourceFromQuery;
             }
-            const filterTypeFromQuery = this.$route.query['projects[type]'];
+            const filterTypeFromQuery = this.$route.query['projects[type]'].toString();
             if (filterTypeFromQuery !== undefined) {
                 this.projectType = filterTypeFromQuery;
             }
-            const filterPkgMgrFromQuery = this.$route.query['projects[pkgmgr]'];
+            const filterPkgMgrFromQuery = this.$route.query['projects[pkgmgr]'].toString();
             if (filterPkgMgrFromQuery !== undefined) {
                 this.packageManager = filterPkgMgrFromQuery;
             }
