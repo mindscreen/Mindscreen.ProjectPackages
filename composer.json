@@ -16,6 +16,9 @@
     "extra": {
         "neos": {
             "package-key": "Mindscreen.ProjectPackages"
-        }
+        },
+        "applied-flow-migrations": [
+            "Neos.Flow-20180415105700"
+        ]
     }
 }
