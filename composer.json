@@ -18,7 +18,8 @@
             "package-key": "Mindscreen.ProjectPackages"
         },
         "applied-flow-migrations": [
-            "Neos.Flow-20180415105700"
+            "Neos.Flow-20180415105700",
+            "Neos.Flow-20190425144900"
         ]
     }
 }
