@@ -3,7 +3,8 @@
     "type": "neos-package",
     "name": "mindscreen/projectpackages",
     "require": {
-        "neos/flow": "*",
+        "neos/flow": "^6.0 || ^7.0",
+         "neos/fluid-adaptor": "*",
         "m4tthumphrey/php-gitlab-api": "9.x",
         "php-http/guzzle6-adapter": "*",
         "mindscreen/yarnlock": "^1.0.0"
