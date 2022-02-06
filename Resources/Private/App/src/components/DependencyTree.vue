@@ -39,7 +39,7 @@
             @include input
         }
     }
-    
+
     &__tree {
         padding-left: 24px;
     }
@@ -52,7 +52,7 @@ import Vue from 'vue';
 import { Component, Prop } from 'vue-property-decorator';
 import DependencyTreeItem from './DependencyTreeItem.vue';
 import EventBus from './EventBus';
-import { PackageInformation } from '../types/Package';
+import { PackageInformation } from '../types';
 
 export const Actions = {
     CollapseAll: 'DependencyTree_CollapseAll',
@@ -89,9 +89,8 @@ const filterDependencyTree = (packages: PackageInformation[], filter: Dependency
 })
 export default class DependencyTree extends Vue {
     treeFilter: string = '';
-    filterTimeout: number|null = null;
-    @Prop()
-    packages: PackageInformation[] = [];
+    @Prop({default: []})
+    packages!: PackageInformation[];
 
     get filteredPackages() {
         const packages = this.packages.slice();

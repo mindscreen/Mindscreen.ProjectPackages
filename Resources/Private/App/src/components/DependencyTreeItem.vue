@@ -45,7 +45,7 @@
         line-height: 24px;
         color: $colorFont;
         margin-left: 20px;
-        
+
         > div {
             margin-right: 4px;
         }
@@ -54,7 +54,7 @@
     &__children {
         padding-left: 20px;
     }
-    
+
     &__toggle {
         height: 16px;
         width: 16px;
@@ -89,7 +89,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import { Component, Prop } from 'vue-property-decorator';
-import { PackageInformation } from '../types/Package';
+import { PackageInformation } from '../types';
 import EventBus from './EventBus';
 import { Actions } from './DependencyTree.vue';
 

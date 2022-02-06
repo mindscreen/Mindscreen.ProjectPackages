@@ -97,8 +97,8 @@
         projectType: string|null = null;
         packageManager: string|null = null;
         repositorySource: string|null = null;
-        @Prop()
-        projects: ProjectInfo[] = [];
+        @Prop({default: []})
+        readonly projects!: ProjectInfo[];
         private projectTypesList: string[] = [];
         private packageManagerList: string[] = [];
         private repositorySourceList: string[] = [];
@@ -160,7 +160,8 @@
                     value: this.repositorySource,
                 },
             ]);
-            this.$router.replace({ query: newQuery });
+            this.$router.replace({ query: newQuery })
+                .catch(() => {});
             EventBus.$emit(Actions.Filter, {
                 name: pattern,
                 packageManager: this.packageManager,
@@ -190,21 +191,21 @@
         }
 
         mounted(): void {
-            const filterNameFromQuery = this.$route.query['projects[name]'].toString();
+            const filterNameFromQuery = this.$route.query['projects[name]'];
             if (filterNameFromQuery !== undefined) {
-                this.filter = filterNameFromQuery;
+                this.filter = filterNameFromQuery.toString();
             }
-            const filtersourceFromQuery = this.$route.query['projects[src]'].toString();
+            const filtersourceFromQuery = this.$route.query['projects[src]'];
             if (filtersourceFromQuery !== undefined) {
-                this.repositorySource = filtersourceFromQuery;
+                this.repositorySource = filtersourceFromQuery.toString();
             }
-            const filterTypeFromQuery = this.$route.query['projects[type]'].toString();
+            const filterTypeFromQuery = this.$route.query['projects[type]'];
             if (filterTypeFromQuery !== undefined) {
-                this.projectType = filterTypeFromQuery;
+                this.projectType = filterTypeFromQuery.toString();
             }
-            const filterPkgMgrFromQuery = this.$route.query['projects[pkgmgr]'].toString();
+            const filterPkgMgrFromQuery = this.$route.query['projects[pkgmgr]'];
             if (filterPkgMgrFromQuery !== undefined) {
-                this.packageManager = filterPkgMgrFromQuery;
+                this.packageManager = filterPkgMgrFromQuery.toString();
             }
             setTimeout(this.updateFilter, 500);
             EventBus.$on(Actions.ProjectsUpdated, () => {

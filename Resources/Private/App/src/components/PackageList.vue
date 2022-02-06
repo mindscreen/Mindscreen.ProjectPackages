@@ -31,11 +31,13 @@
             </div>
         </div>
         <div class="pp-packageList-list">
-            <PackageListItem v-for="(packageVersions, index) in packages"
-                             :key="index"
-                             :name="packageVersions[0].name"
-                             :initialSelection="packageFilter[packageVersions[0].name]"
-                             :packageVersions="packageVersions"/>
+            <PackageListItem
+                v-for="(packageVersions, index) in packages"
+                :key="index"
+                :name="packageVersions[0].name"
+                :initialSelection="packageFilter[packageVersions[0].name]"
+                :packageVersions="packageVersions"
+            />
         </div>
     </div>
 </template>
@@ -102,8 +104,8 @@
 
         packages: PackageVersionInformation[][] = [];
 
-        @Prop()
-        packageFilter: {[k: string]: string[]} = {};
+        @Prop({default: {}})
+        packageFilter!: Record<string, string[]>;
 
         showFilters: boolean = false;
 
@@ -153,7 +155,8 @@
                     value: this.packageManagerFilter,
                 },
             ]);
-            this.$router.replace({ query: newQuery });
+            this.$router.replace({ query: newQuery })
+                .catch(() => {});
         }
 
         reset(): void {
@@ -175,17 +178,17 @@
         }
 
         mounted(): void {
-            const filterNameFromQuery = this.$route.query['packages[name]'].toString();
+            const filterNameFromQuery = this.$route.query['packages[name]'];
             if (filterNameFromQuery !== undefined) {
-                this.filter = filterNameFromQuery;
+                this.filter = filterNameFromQuery.toString();
             }
             const filterDepthFromQuery = this.$route.query['packages[depth]'];
             if (filterDepthFromQuery !== undefined) {
-                this.onlyRootDependencies = filterDepthFromQuery === '0';
+                this.onlyRootDependencies = filterDepthFromQuery.toString() === '0';
             }
-            const filterPkgMgrFromQuery = this.$route.query['packages[pkgmgr]'].toString();
+            const filterPkgMgrFromQuery = this.$route.query['packages[pkgmgr]'];
             if (filterPkgMgrFromQuery !== undefined) {
-                this.packageManagerFilter = filterPkgMgrFromQuery;
+                this.packageManagerFilter = filterPkgMgrFromQuery.toString();
             }
             if (this.filter !== '' || this.filtersUsed) {
                 this.updateFilter();

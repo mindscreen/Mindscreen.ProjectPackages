@@ -1,81 +1,86 @@
-var path = require('path');
-var webpack = require('webpack');
+/* eslint-env node */
+const path = require('path');
+const webpack = require('webpack');
+const TerserPlugin = require('terser-webpack-plugin');
+const { VueLoaderPlugin } = require('vue-loader');
 
-module.exports = {
+const config = {
     entry: './Resources/Private/App/src/index.ts',
     output: {
         path: path.resolve(__dirname, './Resources/Public/Build'),
-        publicPath:'/',
-        filename: 'build.js'
+        publicPath: '/_Resources/Static/Packages/Mindscreen.ProjectPackages/Build/',
+        filename: 'build.js',
+        assetModuleFilename: 'assets/[name][ext]?[hash]',
     },
+    mode: 'development',
     module: {
         rules: [
             {
                 test: /\.vue$/,
                 loader: 'vue-loader',
-                options: {
-                    loaders: {
-                        'ts': 'ts-loader!tslint-loader',
-                        'scss': 'vue-style-loader!css-loader?url=false!sass-loader',
-                        'sass': 'vue-style-loader!css-loader?url=false!sass-loader?indentedSyntax',
-                    }
-                }
-            },
-            {
-                enforce: 'pre',
-                test: /\.ts$/,
-                loader: 'tslint-loader',
             },
             {
                 test: /\.ts$/,
                 loader: 'ts-loader',
                 exclude: /node_modules/,
                 options: {
-                    appendTsSuffixTo: [/\.vue$/],
-                }
+                    appendTsSuffixTo: [ /\.vue$/ ],
+                },
             },
             {
                 test: /\.(png|jpg|gif|svg)$/,
-                loader: 'file-loader',
-                options: {
-                    name: '[name].[ext]?[hash]'
-                }
-            }
-        ]
+                type: 'asset/resource',
+            },
+            {
+                test: /\.scss$/,
+                use: [
+                    'vue-style-loader',
+                    'css-loader',
+                    {
+                        loader: 'sass-loader',
+                        options: {
+                            implementation: require('sass'),
+                        },
+                    },
+                ],
+            },
+        ],
     },
+    plugins: [
+        new VueLoaderPlugin(),
+    ],
     resolve: {
-        extensions: ['.ts', '.js', '.vue', '.json'],
+        extensions: [ '.ts', '.js', '.vue', '.json' ],
         alias: {
-            'vue$': 'vue/dist/vue.esm.js'
-        }
+            'vue$': 'vue/dist/vue.esm.js',
+        },
     },
     devServer: {
         historyApiFallback: true,
-        noInfo: true
+        noInfo: true,
     },
     performance: {
-        hints: false
+        hints: false,
     },
-    devtool: '#eval-source-map'
+    devtool: 'eval-source-map',
 };
 
-if  (process.env.NODE_ENV === 'production') {
-    module.exports.devtool = '#source-map';
+if (process.env.NODE_ENV === 'production') {
+    config.devtool = 'source-map';
+    config.mode = 'production';
 
-    module.exports.plugins = (module.exports.plugins || []).concat([
+    config.plugins = (config.plugins || []).concat([
         new webpack.DefinePlugin({
             'process.env': {
-                NODE_ENV: '"production"'
-            }
+                NODE_ENV: '"production"',
+            },
         }),
-        new webpack.optimize.UglifyJsPlugin({
-            sourceMap: true,
-            compress: {
-                warnings: false
-            }
-        }),
-        new webpack.LoaderOptionsPlugin({
-            minimize: true
-        })
     ]);
+
+    config.optimization = {
+        minimize: true,
+        minimizer: [ new TerserPlugin() ],
+    };
 }
+
+module.exports = config;
