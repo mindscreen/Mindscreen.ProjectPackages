@@ -1,0 +1,6 @@
+-
+  requestFilter: 'isPackage("Mindscreen.ProjectPackages") && isController("Standard")'
+  viewObjectName: Neos\Fusion\View\FusionView
+  options:
+    fusionPathPatterns:
+      - 'resource://Mindscreen.ProjectPackages/Private/Fusion/Controller/Standard.fusion'

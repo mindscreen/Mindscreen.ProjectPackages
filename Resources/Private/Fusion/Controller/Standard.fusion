@@ -1,0 +1,47 @@
+include: resource://Neos.Fusion/Private/Fusion/Root.fusion
+include: resource://Mindscreen.ProjectPackages/Private/Fusion/Components/**/*.fusion
+
+Mindscreen.ProjectPackages.StandardController {
+    index = Mindscreen.ProjectPackages:Components.Layout.Page {
+        head {
+            baseStyles = '
+                <style>
+                    html, body {
+                        margin: 0;
+                        font-family: Helvetica, sans-serif;
+                        height: 100%;
+                        width: 100%;
+                        overflow: hidden;
+                    }
+                    body > div {
+                        display: flex;
+                        flex-direction: column;
+                        height: 100%;
+                    }
+                    .pp-app {
+                        flex: 1 0 auto;
+                        height: calc(100% - 60px);
+                    }
+                    .pp-row {
+                        display: flex;
+                        flex-direction: row;
+                        height: 100%;
+                    }
+                </style>
+            '
+        }
+        body {
+            app = Neos.Fusion:Tag {
+                attributes.id = 'app'
+            }
+        }
+        bodyScripts {
+            app = Neos.Fusion:Tag {
+                tagName = 'script'
+                attributes.src  = Neos.Fusion:ResourceUri {
+                    path = 'Build/build.js'
+                }
+            }
+        }
+    }
+}

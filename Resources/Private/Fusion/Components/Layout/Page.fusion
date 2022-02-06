@@ -1,0 +1,35 @@
+prototype(Mindscreen.ProjectPackages:Components.Layout.Page) < prototype(Neos.Fusion:Join) {
+    doctype = '<!DOCTYPE html>'
+    htmlTag = Neos.Fusion:Tag {
+        tagName = 'html'
+        omitClosingTag = true
+        attributes.lang = 'en'
+    }
+
+    headTag = Neos.Fusion:Tag {
+        tagName = 'head'
+        omitClosingTag = true
+    }
+    head = Neos.Fusion:Join {
+        charset = '<meta charset="utf-8">'
+        titleTag = Neos.Fusion:Tag {
+            tagName = 'title'
+            content = 'ProjectPackages'
+        }
+    }
+    closingHeadTag = '</head>'
+
+    bodyTag = Neos.Fusion:Tag {
+        tagName = 'body'
+        omitClosingTag = true
+    }
+
+    body = Neos.Fusion:Join
+    bodyScripts = Neos.Fusion:Join
+
+    closingBodyTag = '</body>'
+    closingBodyTag.@position = 'end 998'
+
+    closingHtmlTag = '</html>'
+    closingHtmlTag.@position = 'end 999'
+}
