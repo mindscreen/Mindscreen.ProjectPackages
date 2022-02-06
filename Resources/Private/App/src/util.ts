@@ -3,7 +3,7 @@ import { Dictionary } from 'vue-router/types/router';
 function getHostIcon(url: string): string|null {
     const host = url.match(/:\/\/([^/]+)/);
     if (host !== null) {
-        return `http://www.google.com/s2/favicons?domain=${host[1]}`;
+        return `https://www.google.com/s2/favicons?domain=${host[1]}`;
     }
     return null;
 }
