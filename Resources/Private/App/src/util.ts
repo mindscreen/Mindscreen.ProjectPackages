@@ -34,8 +34,26 @@ function buildQueryObject(oldQuery: Dictionary<string | (string | null)[]>, args
     return newQuery;
 }
 
+type ValueOrItem<T = string, K extends string|number = string> = T | Record<K, T>;
+type NestedRecord<T = string, K extends string|number = string> = Record<K, ValueOrItem<T, K>>;
+function flattenObject(input: NestedRecord, keyDelimiter = '.', path = ''): Record<string, string> {
+    let result: Record<string, string> = {};
+    Object.keys(input).forEach(k => {
+        const v = input[k];
+        const key = (path ? path + keyDelimiter : '') + k;
+        if (typeof v === 'string') {
+            result[key] = v;
+            return;
+        }
+        const nested = flattenObject(v, keyDelimiter, key);
+        result = { ...result, ...nested };
+    });
+    return result;
+}
+
 export {
     getHostIcon,
     uuidv4,
     buildQueryObject,
+    flattenObject,
 };

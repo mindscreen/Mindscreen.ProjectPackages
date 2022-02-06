@@ -6,7 +6,7 @@
         <div>
             <pp-badge
                 v-if="project.packageManager !== 'unknown'"
-                :icon="project.packageManager"
+                :icon="'project.' + project.packageManager"
                 :title="project.packageManager">{{project.packageManager}}</pp-badge>
             <pp-badge :iconUrl="getVcsIcon(project.repository.url)" :link="project.repository.url" >
                 Project<span class="visuallyhidden"> on VCS</span>

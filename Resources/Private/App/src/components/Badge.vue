@@ -6,7 +6,7 @@
         :title="title || null"
         :target="link ? '_blank' : false"
         >
-        <span :class="iconClass" :style="{backgroundImage: iconUrl ? `url('${iconUrl}')` : false}"></span>
+        <span :class="iconClass" :style="{backgroundImage: computedIconUrl ? `url('${computedIconUrl}')` : false}"></span>
         <slot></slot>
     </span>
 </template>
@@ -67,7 +67,7 @@
             }
 
             .badge_icon-- {
-                @each $icon in (composer, vagrant, gitlab, npm, yarn, github, bitbucket) {
+                @each $icon in (gitlab, github, bitbucket) {
                     &#{$icon} {
                         background-image: url("~/Resources/Private/App/icons/#{$icon}.png");
                     }
@@ -80,6 +80,22 @@
 <script lang="ts">
     import Vue from 'vue';
     import { Component, Prop } from 'vue-property-decorator';
+    import {flattenObject} from "../util";
+
+    let iconMap: null|Record<string, string> = null;
+    const getIconMap = (): Record<string, string> => {
+        if (iconMap === null) {
+            const configElement = document.getElementById('configuration');
+            if (configElement) {
+                const iconUrls = JSON.parse(configElement.getAttribute('data-icons') || '{}');
+                iconMap = flattenObject(iconUrls);
+            }
+            if (!iconMap) {
+                iconMap = {};
+            }
+        }
+        return iconMap;
+    }
 
     @Component
     export default class Badge extends Vue {
@@ -88,6 +104,19 @@
         @Prop() title?: string;
         @Prop() link?: string;
         @Prop() color?: string;
+
+        get computedIconUrl(): string|null {
+            if (this.iconUrl) {
+                return this.iconUrl;
+            }
+            if (this.icon) {
+                const map = getIconMap();
+                if (this.icon in map) {
+                    return map[this.icon];
+                }
+            }
+            return null;
+        }
 
         get badgeClass(): string {
             let className = 'badge';
@@ -102,7 +131,7 @@
 
         get iconClass(): string {
             let className = 'badge_icon__icon';
-            if (this.icon) {
+            if (this.icon && !this.computedIconUrl) {
                 className += ` badge_icon--${this.icon}`;
             }
             return className;

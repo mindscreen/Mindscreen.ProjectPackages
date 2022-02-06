@@ -34,6 +34,25 @@ Mindscreen.ProjectPackages.StandardController {
             app = Neos.Fusion:Tag {
                 attributes.id = 'app'
             }
+            configuration = Neos.Fusion:Tag {
+                attributes {
+                    id = 'configuration'
+                    data-icons = Neos.Fusion:Map {
+                        items = ${Configuration.setting('Mindscreen.ProjectPackages.icons')}
+                        itemName = 'group'
+                        itemRenderer = Neos.Fusion:Map {
+                            items = ${group}
+                            itemRenderer = Neos.Fusion:Value {
+                                resourceUri = Neos.Fusion:ResourceUri {
+                                    path = ${item}
+                                }
+                                value = ${String.startsWith(item, 'resource://') ? this.resourceUri : item}
+                            }
+                        }
+                        @process.stringify = ${Json.stringify(value)}
+                    }
+                }
+            }
         }
         bodyScripts {
             app = Neos.Fusion:Tag {
