@@ -4,9 +4,10 @@
         "sourceMap": true,
         "strict": true,
         "noImplicitReturns": true,
-        "module": "es2015",
+        "module": "es6",
         "moduleResolution": "node",
         "target": "es5",
+        "useDefineForClassFields": true,
         "experimentalDecorators": true
     },
     "include": [

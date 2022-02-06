@@ -23,14 +23,14 @@ Vue.component('pp-checkbox', Checkbox);
 Vue.component('v-select', vSelect);
 
 @Component({
-  components: {
-    PackageList,
-    Project,
-    ProjectList,
-    SiteHeader,
-  },
-  router: router,
-  template: `
+    components: {
+        PackageList,
+        Project,
+        ProjectList,
+        SiteHeader,
+    },
+    router: router,
+    template: `
     <div>
         <site-header />
         <div class="pp-app">
@@ -44,84 +44,85 @@ Vue.component('v-select', vSelect);
     `,
 })
 class App extends Vue {
-  allProjects: ProjectInfo[] = [];
-  projects: ProjectInfo[] = [];
-  packageFilter: {[p: string]: string[]} = {};
+    allProjects: ProjectInfo[] = [];
+    projects: ProjectInfo[] = [];
+    packageFilter: {[p: string]: string[]} = {};
 
-  created(): void {
-    fetch('/projects/list')
-      .then(r => r.json())
-      .then(p => {
-        this.allProjects = p;
-        this.projects = p;
-        return p;
-      });
-    let packagesFromUrl = this.$route.query['packages[packages]'];
-    if (packagesFromUrl !== undefined) {
-      if (!Array.isArray(packagesFromUrl)) {
-        packagesFromUrl = packagesFromUrl.split(';');
-      }
-      packagesFromUrl
-        .map(p => p.split(':'))
-        .map(([n, v]) => {
-          if (this.packageFilter[n] === undefined) {
-            this.packageFilter[n] = [];
-          }
-          this.packageFilter[n].push(v);
-        });
-    }
-  }
-
-  @Watch('projects')
-  onProjectsChanged(): void {
-    EventBus.$emit(ProjectListActions.ProjectsUpdated);
-  }
-
-  mounted() {
-    EventBus.$on(PackageListActions.PackageChanged, (filterArgument: { name: string, parameters: string[] }) => {
-      if (filterArgument.parameters.length === 0) {
-        if (this.packageFilter[filterArgument.name] !== undefined) {
-          delete this.packageFilter[filterArgument.name];
+    created(): void {
+        fetch('/projects/list')
+            .then(r => r.json())
+            .then(p => {
+                this.allProjects = p;
+                this.projects = p;
+                return p;
+            });
+        let packagesFromUrl = this.$route.query['packages[packages]'];
+        if (packagesFromUrl !== undefined) {
+            if (!Array.isArray(packagesFromUrl)) {
+                packagesFromUrl = packagesFromUrl.split(';');
+            }
+            packagesFromUrl
+                .filter(p => p !== null)
+                .map(p => (p as string).split(':'))
+                .map(([ n, v ]) => {
+                    if (this.packageFilter[n] === undefined) {
+                        this.packageFilter[n] = [];
+                    }
+                    this.packageFilter[n].push(v);
+                });
         }
-      } else {
-        this.packageFilter[filterArgument.name] = filterArgument.parameters;
-      }
-      this.loadFilteredPackageList();
-    });
-    EventBus.$on(PackageListActions.FilterReset, () => {
-      this.projects = this.allProjects;
-      this.packageFilter = {};
-    });
-  }
+    }
 
-  loadFilteredPackageList() {
-    if (Object.keys(this.packageFilter).length === 0) {
-      this.projects = this.allProjects;
-      this.$router.replace({ query: buildQueryObject(this.$route.query, [{
-        condition: false,
-        key: 'packages[packages]',
-        value: null,
-      }])});
-    } else {
-      const initial: string[] = [];
-      const flattened = Object.keys(this.packageFilter).reduce((p, c) => p.concat(this.packageFilter[c]), initial);
-      this.$router.replace({ query: buildQueryObject(this.$route.query, [{
-        condition: true,
-        key: 'packages[packages]',
-        value: flattened.join(';'),
-      }])});
-      const queryString = flattened.map(s => `packages[]=${s}`).join('&');
-      fetch('/packages/projects?' + queryString)
-        .then(r => r.json())
-        .then(p => {
-          this.projects = p;
-          EventBus.$emit(ProjectListActions.ProjectsUpdated);
-          return p;
+    @Watch('projects')
+    onProjectsChanged(): void {
+        EventBus.$emit(ProjectListActions.ProjectsUpdated);
+    }
+
+    mounted() {
+        EventBus.$on(PackageListActions.PackageChanged, (filterArgument: { name: string, parameters: string[] }) => {
+            if (filterArgument.parameters.length === 0) {
+                if (this.packageFilter[filterArgument.name] !== undefined) {
+                    delete this.packageFilter[filterArgument.name];
+                }
+            } else {
+                this.packageFilter[filterArgument.name] = filterArgument.parameters;
+            }
+            this.loadFilteredPackageList();
+        });
+        EventBus.$on(PackageListActions.FilterReset, () => {
+            this.projects = this.allProjects;
+            this.packageFilter = {};
         });
     }
-  }
+
+    loadFilteredPackageList() {
+        if (Object.keys(this.packageFilter).length === 0) {
+            this.projects = this.allProjects;
+            this.$router.replace({ query: buildQueryObject(this.$route.query, [ {
+                condition: false,
+                key: 'packages[packages]',
+                value: null,
+            } ]) });
+        } else {
+            const initial: string[] = [];
+            const flattened = Object.keys(this.packageFilter).reduce((p, c) => p.concat(this.packageFilter[c]), initial);
+            this.$router.replace({ query: buildQueryObject(this.$route.query, [ {
+                condition: true,
+                key: 'packages[packages]',
+                value: flattened.join(';'),
+            } ]) });
+            const queryString = flattened.map(s => `packages[]=${s}`).join('&');
+            fetch('/packages/projects?' + queryString)
+                .then(r => r.json())
+                .then(p => {
+                    this.projects = p;
+                    EventBus.$emit(ProjectListActions.ProjectsUpdated);
+                    return p;
+                });
+        }
+    }
 }
-/* tslint:disable */
+
 new App({
-  el: '#app'
+    el: '#app',
 });

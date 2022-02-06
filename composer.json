@@ -3,7 +3,8 @@
     "type": "neos-package",
     "name": "mindscreen/projectpackages",
     "require": {
-        "neos/flow": "*",
+        "neos/flow": "^6.0 || ^7.0",
+        "neos/fluid-adaptor": "*",
         "m4tthumphrey/php-gitlab-api": "9.x",
         "php-http/guzzle6-adapter": "*",
         "mindscreen/yarnlock": "^1.0.0"
@@ -16,6 +17,16 @@
     "extra": {
         "neos": {
             "package-key": "Mindscreen.ProjectPackages"
-        }
+        },
+        "applied-flow-migrations": [
+            "Neos.Flow-20180415105700",
+            "Neos.Flow-20190425144900",
+            "Neos.Flow-20190515215000",
+            "Neos.Flow-20200813181400",
+            "Neos.Flow-20201003165200",
+            "Neos.Flow-20201109224100",
+            "Neos.Flow-20201205172733",
+            "Neos.Flow-20201207104500"
+        ]
     }
 }

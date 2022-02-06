@@ -39,11 +39,11 @@
         background: linear-gradient(0deg, $colorBgDark 0%, $colorBgLight 5%, $colorBgLight 95%, $colorBgHover 100%);
 
         @each $colorName, $color in
-            (blue, #0575bf),
-            (orange, #f8791f),
-            (green, #7ac732),
-            (red, #ce3024),
-            (grey, #7c7c7c)
+            ('blue', #0575bf),
+            ('orange', #f8791f),
+            ('green', #7ac732),
+            ('red', #ce3024),
+            ('grey', #7c7c7c)
         {
             &--#{$colorName} {
                 background: linear-gradient(0deg, darken($color, 20%) 0%, $color 5%, $color 95%, lighten($color, 20%) 100%);
@@ -69,7 +69,7 @@
             .badge_icon-- {
                 @each $icon in (composer, vagrant, gitlab, npm, yarn, github, bitbucket) {
                     &#{$icon} {
-                        background-image: url("/_Resources/Static/Packages/Mindscreen.ProjectPackages/Build/assets/#{$icon}.png");
+                        background-image: url("~/Resources/Private/App/icons/#{$icon}.png");
                     }
                 }
             }

@@ -11,7 +11,7 @@
                 </span>
 
                 <p v-if="description">{{description}}</p>
-                
+
                 <div v-if="messages.length > 0">
                     <h3>Messages</h3>
                     <div class="pp-project__messages__container">
@@ -103,7 +103,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import EventBus from './EventBus';
 import { Message, ProjectInfo } from '../types';
-import { views } from './project-views/index';
+import { views } from './project-views';
 import { getHostIcon } from '../util';
 
 export const Actions = {
@@ -142,17 +142,18 @@ export default class Project extends Vue {
     }
 
     mounted(): void {
-        const projectKeyFromQuery = this.$route.query['project[key]'];
-        if (projectKeyFromQuery !== undefined) {
-            fetch(`projects/show/${projectKeyFromQuery}`)
+        const arg = 'project[key]';
+        if (arg in this.$route.query) {
+            fetch(`projects/show/${this.$route.query[arg]}`)
                 .then(r => r.json())
                 .then(p => this.loadProject(p as ProjectInfo));
         }
         EventBus.$on(Actions.Load, (project: ProjectInfo) => {
             this.loadProject(project);
-            if (this.project !== undefined) {
-            this.$router.push(
-                { query: (Object as any).assign({}, this.$route.query, { 'project[key]': this.project.key }) });
+            if (this.project !== undefined && arg in this.$route.query && this.$route.query[arg] !== this.project.key) {
+                this.$router.push({
+                    query: (Object as any).assign({}, this.$route.query, { [arg]: this.project.key }),
+                });
             }
         });
     }

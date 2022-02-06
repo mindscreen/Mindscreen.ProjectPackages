@@ -3,11 +3,11 @@ import { ProjectInfo, ProjectFilter } from './Project';
 import { PackageInformation, PackageVersionInformation, PackageFilter } from './Package';
 
 export {
-  Message,
-  MessageSeverity,
-  ProjectInfo,
-  ProjectFilter,
-  PackageInformation,
-  PackageVersionInformation,
-  PackageFilter,
+    Message,
+    MessageSeverity,
+    ProjectInfo,
+    ProjectFilter,
+    PackageInformation,
+    PackageVersionInformation,
+    PackageFilter,
 };

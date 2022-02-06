@@ -6,7 +6,12 @@
             <button @click="collapsed = !collapsed">{{collapsed ? '▶' : '▼'}}
             </button>
             <label :for="itemId()">
-                <img :alt="packageManager" :title="packageManager" :src="`/_Resources/Static/Packages/Mindscreen.ProjectPackages/Build/assets/${packageManager}.png`">
+                <img
+                    v-if="packageManager"
+                    :alt="packageManager"
+                    :title="packageManager"
+                    :src="`/_Resources/Static/Packages/Mindscreen.ProjectPackages/Build/assets/${packageManager}.png`"
+                >
                 {{name}}
             </label>
             <div v-if="!collapsed" class="pp-packageList__item-versionList">
@@ -108,21 +113,21 @@
 
         shown: boolean = true;
 
-        @Prop()
-        name: string = '';
+        @Prop({default: ''})
+        name!: string;
+
+        @Prop({default: []})
+        packageVersions!: PackageVersionInformation[];
 
         @Prop()
-        packageVersions: PackageVersionInformation[] = [];
-
-        @Prop()
-        initialSelection?: string[];
+        readonly initialSelection?: string[];
 
         constructor() {
             super();
         }
 
         get packageManager() {
-            return this.packageVersions[0].packageManager;
+            return this.packageVersions[0]?.packageManager || null;
         }
 
         get depths(): number[] {

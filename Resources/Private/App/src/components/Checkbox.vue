@@ -87,10 +87,10 @@ export default class Checkbox extends Vue {
     title!: string;
     @Prop()
     label!: string;
-    @Prop({default: ''})
-    className!: string;
-    @Prop({default: false})
-    disabled!: boolean;
+    @Prop()
+    className: string = '';
+    @Prop()
+    disabled: boolean = false;
     @Prop()
     value!: boolean;
 
