@@ -8,7 +8,7 @@
                     <pp-badge v-if="props.pkg.additional && props.pkg.additional.dist && props.pkg.additional.dist.type === 'path'">
                         Local
                     </pp-badge>
-                    <pp-badge 
+                    <pp-badge
                         v-if="props.pkg.additional && props.pkg.additional.source"
                         :iconUrl="getPkgIcon(props.pkg.additional.source.host)"
                         :title="props.pkg.additional.source.host"
@@ -46,6 +46,7 @@ import EventBus from '../EventBus';
 import { ProjectInfo, PackageInformation } from '../../types';
 import { Prop, Component, Watch } from 'vue-property-decorator';
 import DependencyTree from '../DependencyTree.vue';
+import {getHostIcon} from "../../util";
 
 @Component({
     components: {
@@ -71,7 +72,7 @@ export default class ComposerProject extends Vue {
     }
 
     getPkgIcon(gitUri: string) {
-        return `http://www.google.com/s2/favicons?domain=${gitUri}`;
+        return getHostIcon(gitUri);
     }
 
     getPkgUrl(gitUri: string): string {
