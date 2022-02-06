@@ -17,7 +17,6 @@ indent_style = tab
 
 # HTML-Files
 [*.html]
-indent_style = tab
 indent_size = 2
 
 # MD-Files
@@ -26,4 +25,7 @@ trim_trailing_whitespace = false
 
 # package.json or .travis.yml
 [{package.json,.travis.yml}]
+indent_size = 2
+
+[*.yaml]
 indent_size = 2
