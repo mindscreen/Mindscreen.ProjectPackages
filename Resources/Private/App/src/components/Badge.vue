@@ -80,22 +80,7 @@
 <script lang="ts">
     import Vue from 'vue';
     import { Component, Prop } from 'vue-property-decorator';
-    import {flattenObject} from "../util";
-
-    let iconMap: null|Record<string, string> = null;
-    const getIconMap = (): Record<string, string> => {
-        if (iconMap === null) {
-            const configElement = document.getElementById('configuration');
-            if (configElement) {
-                const iconUrls = JSON.parse(configElement.getAttribute('data-icons') || '{}');
-                iconMap = flattenObject(iconUrls);
-            }
-            if (!iconMap) {
-                iconMap = {};
-            }
-        }
-        return iconMap;
-    }
+    import {flattenObject, getIcon} from "../util";
 
     @Component
     export default class Badge extends Vue {
@@ -110,10 +95,7 @@
                 return this.iconUrl;
             }
             if (this.icon) {
-                const map = getIconMap();
-                if (this.icon in map) {
-                    return map[this.icon];
-                }
+                return getIcon(this.icon);
             }
             return null;
         }

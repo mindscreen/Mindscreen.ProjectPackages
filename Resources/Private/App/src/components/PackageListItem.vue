@@ -10,7 +10,7 @@
                     v-if="packageManager"
                     :alt="packageManager"
                     :title="packageManager"
-                    :src="`/_Resources/Static/Packages/Mindscreen.ProjectPackages/Build/assets/${packageManager}.png`"
+                    :src="getIcon(`project.${packageManager}`)"
                 >
                 {{name}}
             </label>
@@ -99,6 +99,7 @@
     import { Actions as PackageListActions } from './PackageList.vue';
     import { PackageVersionInformation, PackageFilter } from '../types';
     import { Component, Prop } from 'vue-property-decorator';
+    import { getIcon as getIconUrl } from '../util';
 
     const AnyVersion = 'ANY';
 
@@ -141,6 +142,10 @@
                 this.selectedVersions = [];
             }
             this.updatePackages();
+        }
+
+        getIcon(name: string): string|null {
+            return getIconUrl(name);
         }
 
         isSelected(versionName: string): boolean {
