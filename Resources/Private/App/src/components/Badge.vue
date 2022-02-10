@@ -65,14 +65,6 @@
                 top: 0;
                 border-radius: $border-radius 0 0 $border-radius;
             }
-
-            .badge_icon-- {
-                @each $icon in (gitlab, github, bitbucket) {
-                    &#{$icon} {
-                        background-image: url("~/Resources/Private/App/icons/#{$icon}.png");
-                    }
-                }
-            }
         }
     }
 </style>
