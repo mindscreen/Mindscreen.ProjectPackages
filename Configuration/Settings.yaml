@@ -4,8 +4,14 @@ Neos:
       routes:
         'Mindscreen.ProjectPackages': true
 
-#Mindscreen:
-#  ProjectPackages:
+Mindscreen:
+  ProjectPackages:
+    icons:
+      project:
+        composer: resource://Mindscreen.ProjectPackages/Public/Images/Icons/composer.png
+        npm: resource://Mindscreen.ProjectPackages/Public/Images/Icons/npm.png
+        vagrant: resource://Mindscreen.ProjectPackages/Public/Images/Icons/vagrant.png
+        yarn: resource://Mindscreen.ProjectPackages/Public/Images/Icons/yarn.png
 #    allowCrossOriginRequests: false
 #    clients:
 #      myGitlab:

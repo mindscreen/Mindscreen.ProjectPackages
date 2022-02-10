@@ -34,8 +34,46 @@ function buildQueryObject(oldQuery: Dictionary<string | (string | null)[]>, args
     return newQuery;
 }
 
+let iconUrlMap: Record<string, string>|null = null;
+const getIconMap = (): Record<string, string> => {
+    if (iconUrlMap === null) {
+        const configElement = document.getElementById('configuration');
+        if (configElement) {
+            const iconUrls = JSON.parse(configElement.getAttribute('data-icons') || '{}');
+            iconUrlMap = flattenObject(iconUrls);
+        }
+        if (!iconUrlMap) {
+            iconUrlMap = {};
+        }
+    }
+    return iconUrlMap;
+};
+function getIcon(iconName: string): string|null {
+    const iconMap = getIconMap();
+    return iconMap[iconName] || null;
+}
+
+type ValueOrItem<T = string, K extends string|number = string> = T | Record<K, T>;
+type NestedRecord<T = string, K extends string|number = string> = Record<K, ValueOrItem<T, K>>;
+function flattenObject(input: NestedRecord, keyDelimiter = '.', path = ''): Record<string, string> {
+    let result: Record<string, string> = {};
+    Object.keys(input).forEach(k => {
+        const v = input[k];
+        const key = (path ? path + keyDelimiter : '') + k;
+        if (typeof v === 'string') {
+            result[key] = v;
+            return;
+        }
+        const nested = flattenObject(v, keyDelimiter, key);
+        result = { ...result, ...nested };
+    });
+    return result;
+}
+
 export {
     getHostIcon,
+    getIcon,
     uuidv4,
     buildQueryObject,
+    flattenObject,
 };

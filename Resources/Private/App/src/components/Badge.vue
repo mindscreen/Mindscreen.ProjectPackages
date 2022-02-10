@@ -6,7 +6,7 @@
         :title="title || null"
         :target="link ? '_blank' : false"
         >
-        <span :class="iconClass" :style="{backgroundImage: iconUrl ? `url('${iconUrl}')` : false}"></span>
+        <span :class="iconClass" :style="{backgroundImage: computedIconUrl ? `url('${computedIconUrl}')` : false}"></span>
         <slot></slot>
     </span>
 </template>
@@ -65,14 +65,6 @@
                 top: 0;
                 border-radius: $border-radius 0 0 $border-radius;
             }
-
-            .badge_icon-- {
-                @each $icon in (composer, vagrant, gitlab, npm, yarn, github, bitbucket) {
-                    &#{$icon} {
-                        background-image: url("~/Resources/Private/App/icons/#{$icon}.png");
-                    }
-                }
-            }
         }
     }
 </style>
@@ -80,6 +72,7 @@
 <script lang="ts">
     import Vue from 'vue';
     import { Component, Prop } from 'vue-property-decorator';
+    import {flattenObject, getIcon} from "../util";
 
     @Component
     export default class Badge extends Vue {
@@ -88,6 +81,16 @@
         @Prop() title?: string;
         @Prop() link?: string;
         @Prop() color?: string;
+
+        get computedIconUrl(): string|null {
+            if (this.iconUrl) {
+                return this.iconUrl;
+            }
+            if (this.icon) {
+                return getIcon(this.icon);
+            }
+            return null;
+        }
 
         get badgeClass(): string {
             let className = 'badge';
@@ -102,7 +105,7 @@
 
         get iconClass(): string {
             let className = 'badge_icon__icon';
-            if (this.icon) {
+            if (this.icon && !this.computedIconUrl) {
                 className += ` badge_icon--${this.icon}`;
             }
             return className;
